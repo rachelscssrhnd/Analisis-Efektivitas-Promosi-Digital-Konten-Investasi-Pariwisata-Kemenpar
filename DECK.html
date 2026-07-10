@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Analisis Efektivitas Promosi Digital — Kemenpar SDCC 2025–2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy:    #1B3A6B;
+  --navy2:   #0D2244;
+  --blue:    #4A7BC8;
+  --blue2:   #6E9FE0;
+  --gold:    #E8A000;
+  --gold2:   #F5C842;
+  --red:     #C8102E;
+  --green:   #0E7C4A;
+  --white:   #FFFFFF;
+  --offwhite:#F4F6FA;
+  --ink:     #1A1F2E;
+  --ink2:    #3D4A61;
+  --ink3:    #7A8BA8;
+  --rule:    #D6DCE8;
+  --slide-w: 960px;
+  --slide-h: 540px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background:#0D1117;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  display:flex; flex-direction:column; align-items:center;
+  padding:36px 20px 100px; gap:20px;
+}
+.slide {
+  width:var(--slide-w); height:var(--slide-h);
+  background:var(--white);
+  position:relative; overflow:hidden;
+  display:none; flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.5);
+  flex-shrink:0;
+}
+.slide.active { display:flex; }
+.top-strip {
+  height:5px;
+  background:linear-gradient(90deg,var(--navy) 0%,var(--blue) 60%,var(--gold) 100%);
+  flex-shrink:0;
+}
+.hbar {
+  height:38px; background:var(--navy);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; flex-shrink:0;
+}
+.hbar-left { display:flex; align-items:center; gap:9px; }
+.hbar-flag { width:20px; height:14px; display:flex; flex-direction:column; border-radius:2px; overflow:hidden; }
+.hbar-flag .r { flex:1; background:var(--red); }
+.hbar-flag .w { flex:1; background:white; }
+.hbar-title { font-size:10px; font-weight:700; color:rgba(255,255,255,.88); letter-spacing:.06em; text-transform:uppercase; }
+.hbar-right { font-size:10px; color:rgba(255,255,255,.4); letter-spacing:.08em; text-transform:uppercase; font-weight:600; }
+.sbody { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+.sfooter {
+  height:26px; background:var(--navy2);
+  display:flex; align-items:center; justify-content:space-between; padding:0 24px; flex-shrink:0;
+}
+.sfooter span { font-size:8.5px; color:rgba(255,255,255,.32); letter-spacing:.08em; text-transform:uppercase; }
+.stitle { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--navy); line-height:1.2; margin-bottom:2px; }
+.ssub {
+  font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink3); padding-bottom:8px; border-bottom:2px solid var(--navy);
+  margin-bottom:10px; display:flex; align-items:center; gap:7px;
+}
+.ssub::before { content:''; display:inline-block; width:16px; height:3px; background:var(--red); border-radius:2px; }
+.pad { padding:13px 22px; }
+.kpis { display:flex; gap:8px; }
+.kpi { flex:1; border:1px solid var(--rule); border-radius:6px; padding:9px 11px; position:relative; overflow:hidden; }
+.kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi.navy::after { background:var(--navy); }
+.kpi.red::after  { background:var(--red); }
+.kpi.gold::after { background:var(--gold); }
+.kpi.green::after{ background:var(--green); }
+.kpi.blue::after { background:var(--blue); }
+.kpi .label { font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); margin-bottom:3px; }
+.kpi .val   { font-size:22px; font-weight:800; color:var(--navy); line-height:1; margin-bottom:2px; }
+.kpi .val.sm { font-size:16px; }
+.kpi .sub   { font-size:9.5px; color:var(--ink3); }
+.ibox {
+  border-left:3px solid var(--navy); background:var(--offwhite);
+  padding:7px 10px; border-radius:0 5px 5px 0; margin-top:8px;
+}
+.ibox.red  { border-color:var(--red); }
+.ibox.gold { border-color:var(--gold); }
+.ibox.green{ border-color:var(--green); }
+.ibox.blue { border-color:var(--blue); }
+.ibox .itag { font-size:8.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--navy); margin-bottom:2px; }
+.ibox.red  .itag { color:var(--red); }
+.ibox.gold .itag { color:#8A5E00; }
+.ibox.green .itag{ color:var(--green); }
+.ibox.blue .itag { color:var(--blue); }
+.ibox .itxt { font-size:10px; color:var(--ink2); line-height:1.5; }
+.hbr { display:flex; align-items:center; gap:7px; margin-bottom:5px; }
+.lbl { font-size:10px; font-weight:600; color:var(--ink2); white-space:nowrap; width:120px; flex-shrink:0; }
+.lbl.xs { width:100px; font-size:9px; }
+.track { flex:1; height:6px; background:var(--offwhite); border-radius:3px; overflow:hidden; }
+.fill  { height:100%; border-radius:3px; background:var(--navy); }
+.v { font-size:9.5px; font-weight:700; color:var(--ink2); white-space:nowrap; min-width:38px; text-align:right; }
+.cw { position:relative; }
+/* tables */
+.mt { width:100%; border-collapse:collapse; font-size:9.5px; }
+.mt th { background:var(--navy); color:white; padding:5px 9px; text-align:left; font-size:8.5px; letter-spacing:.08em; text-transform:uppercase; font-weight:700; }
+.mt td { padding:5px 9px; border-bottom:1px solid var(--rule); color:var(--ink2); }
+.mt tr:hover td { background:var(--offwhite); }
+/* platform badges */
+.pp { display:inline-block; font-size:8px; font-weight:700; letter-spacing:.06em; padding:2px 6px; border-radius:3px; text-transform:uppercase; color:white; }
+.pp.ig { background:#7B3A8A; }
+.pp.tt { background:#1A3040; }
+.pp.yt { background:#8B1A1A; }
+.pp.tw { background:#1A4A6A; }
+.pp.li { background:var(--navy); }
+/* heatmap */
+.hm-head { font-weight:700; color:white; background:var(--navy); text-align:center; padding:4px 2px; font-size:8.5px; }
+.hm-row-lbl { padding:4px 6px; font-size:8.5px; color:var(--ink2); font-weight:600; display:flex; align-items:center; }
+.hm-cell { padding:4px 2px; font-size:9.5px; color:var(--ink3); text-align:center; display:flex; align-items:center; justify-content:center; }
+/* wbox */
+.wbox { border-radius:4px; padding:5px 8px; margin-top:6px; }
+.wbox.warn { background:rgba(200,16,46,.06); border:1px solid rgba(200,16,46,.2); }
+.wbox.opp  { background:rgba(14,124,74,.06); border:1px solid rgba(14,124,74,.2); }
+.wbox.tip  { background:rgba(27,58,107,.06); border:1px solid rgba(27,58,107,.2); }
+.wtag { font-size:8px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--red); margin-bottom:2px; }
+.wbox.opp  .wtag { color:var(--green); }
+.wbox.tip  .wtag { color:var(--navy); }
+.wtxt { font-size:9px; color:var(--ink2); line-height:1.4; }
+/* rec cards */
+.rec { border:1px solid var(--rule); border-radius:7px; padding:11px 13px; display:flex; flex-direction:column; }
+.rnum { font-size:7.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); margin-bottom:2px; }
+.rtitle { font-size:11.5px; font-weight:700; color:var(--navy); margin:5px 0 4px; }
+.rbody { font-size:9px; color:var(--ink2); line-height:1.5; flex:1; }
+.rtag { margin-top:7px; font-size:8.5px; color:var(--ink3); display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+.bd { display:inline-block; font-size:8px; font-weight:700; padding:2px 7px; border-radius:20px; }
+.bd.ok   { background:rgba(14,124,74,.1); color:var(--green); }
+.bd.high { background:rgba(27,58,107,.1); color:var(--navy); }
+.bd.near { background:rgba(232,160,0,.12); color:#7A5500; }
+/* COVER */
+.cover-bg { position:absolute; inset:0; background:linear-gradient(135deg, #0D2244 0%, #1B3A6B 55%, #2A5298 100%); }
+.cover-stripe { position:absolute; bottom:0; left:0; right:0; height:6px; background:linear-gradient(90deg,var(--gold) 0%,var(--gold2) 100%); }
+.cover-content { position:relative; z-index:2; display:flex; flex-direction:column; justify-content:space-between; height:100%; padding:30px 40px 20px; }
+.cover-over { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:12px; }
+.cover-title { font-family:'Playfair Display',serif; font-size:30px; font-weight:800; color:white; line-height:1.2; max-width:620px; }
+.cover-title em { color:var(--gold2); font-style:italic; }
+.cover-sub { font-size:10.5px; color:rgba(255,255,255,.6); line-height:1.6; margin-top:8px; max-width:560px; }
+.cover-meta { display:flex; gap:18px; margin-top:16px; }
+.cm-item { border-left:2px solid rgba(255,255,255,.2); padding-left:10px; }
+.cm-lbl { font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:2px; }
+.cm-val { font-size:10px; font-weight:700; color:white; }
+.cover-team { display:flex; gap:7px; flex-wrap:wrap; }
+.ct-chip { display:flex; align-items:center; gap:7px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:5px 9px; }
+.ct-av { width:26px; height:26px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; color:var(--navy2); flex-shrink:0; }
+.ct-name { font-size:9.5px; font-weight:700; color:white; }
+.ct-nim  { font-size:8.5px; color:rgba(255,255,255,.45); }
+/* deck nav */
+.deck-nav {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:rgba(13,34,68,.9); backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.12); border-radius:40px;
+  padding:10px 22px; display:flex; align-items:center; gap:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.nbtn { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); color:white; font-size:11px; font-weight:700; padding:5px 14px; border-radius:20px; cursor:pointer; font-family:inherit; }
+.nbtn:hover { background:rgba(255,255,255,.2); }
+.ncounter { font-size:11px; font-weight:700; color:rgba(255,255,255,.6); letter-spacing:.08em; min-width:36px; text-align:center; }
+.ndots { display:flex; gap:6px; align-items:center; }
+.ndot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); cursor:pointer; transition:all .2s; }
+.ndot.active { background:var(--gold); width:20px; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ SLIDE 1 — COVER ══════════ -->
+<div class="slide active" id="s1">
+  <div class="cover-bg"></div>
+  <div class="cover-stripe"></div>
+  <div class="cover-content">
+    <div>
+      <div class="cover-over">Sains Data Consulting SD-A2 · Kelompok [X] · SDCC 2025–2026</div>
+      <div class="cover-title">Analisis Efektivitas <em>Promosi Digital</em><br>Konten Investasi Pariwisata Indonesia</div>
+      <div class="cover-sub">Pemetaan Strategi Konten Multi-Platform Berbasis Data untuk Menarik Investasi Pariwisata — Instagram · LinkedIn · TikTok · Twitter/X · YouTube</div>
+      <div class="cover-meta">
+        <div class="cm-item"><div class="cm-lbl">Klien</div><div class="cm-val">Kementerian Pariwisata & Ekonomi Kreatif</div></div>
+        <div class="cm-item"><div class="cm-lbl">Dataset</div><div class="cm-val">4.694 Post · 5 Platform · LAKIN 2025</div></div>
+        <div class="cm-item"><div class="cm-lbl">Periode Data</div><div class="cm-val">2025 – Juni 2026</div></div>
+        <div class="cm-item"><div class="cm-lbl">Metode</div><div class="cm-val">BERTopic · XLM-RoBERTa · Kruskal-Wallis · Gap Matrix</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:7px;">Tim Peneliti · Universitas Airlangga FTMM</div>
+      <div class="cover-team">
+        <div class="ct-chip"><div class="ct-av">A1</div><div class="ct-info"><div class="ct-name">Anggota 1</div><div class="ct-nim">NIM</div></div></div>
+        <div class="ct-chip"><div class="ct-av">A2</div><div class="ct-info"><div class="ct-name">Anggota 2</div><div class="ct-nim">NIM</div></div></div>
+        <div class="ct-chip"><div class="ct-av">A3</div><div class="ct-info"><div class="ct-name">Anggota 3</div><div class="ct-nim">NIM</div></div></div>
+        <div class="ct-chip"><div class="ct-av">A4</div><div class="ct-info"><div class="ct-name">Anggota 4</div><div class="ct-nim">NIM</div></div></div>
+        <div class="ct-chip"><div class="ct-av">A5</div><div class="ct-info"><div class="ct-name">Anggota 5</div><div class="ct-nim">NIM</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Confidential · Untuk Penggunaan Internal Kemenpar</span><span>Universitas Airlangga – FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 2 — DATASET & METODOLOGI ══════════ -->
+<div class="slide" id="s2">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Dataset & Metodologi</div></div><div class="hbar-right">02 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">Konteks, Masalah & Metodologi</div>
+    <div class="ssub">LAKIN 2025 · 4.694 Post · 5 Platform · BERTopic + XLM-RoBERTa</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <!-- KPI kiri -->
+      <div style="background:var(--navy);border-radius:7px;padding:12px 14px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:8px;">Konteks Investasi</div>
+        <div style="margin-bottom:8px;"><div style="font-size:22px;font-weight:800;color:var(--gold2);line-height:1;">Rp 51,98 T</div><div style="font-size:9px;color:rgba(255,255,255,.5);">Total realisasi 13 destinasi (LAKIN 2025)</div></div>
+        <div style="margin-bottom:8px;"><div style="font-size:22px;font-weight:800;color:white;line-height:1;">10 / 13</div><div style="font-size:9px;color:rgba(255,255,255,.5);">Destinasi capai target LAKIN ≥ 100%</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:var(--gold2);line-height:1;">4.694</div><div style="font-size:9px;color:rgba(255,255,255,.5);">Post dianalisis dari 5 platform</div></div>
+      </div>
+      <!-- Masalah tengah -->
+      <div style="border:1px solid var(--rule);border-radius:7px;padding:11px 13px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:7px;">Permasalahan</div>
+        <div class="wbox warn" style="margin-bottom:0;padding:6px 9px;"><div class="wtxt" style="font-size:9px;">Kemenpar <strong>belum pernah</strong> memproduksi konten investasi pariwisata secara terstruktur di media sosial</div></div>
+        <div class="wbox warn" style="margin-top:5px;padding:6px 9px;"><div class="wtxt" style="font-size:9px;">Ruang digital <strong>didominasi aktor privat</strong>: agen properti, developer vila Bali untuk pembeli Singapura</div></div>
+        <div class="wbox warn" style="margin-top:5px;padding:6px 9px;"><div class="wtxt" style="font-size:9px;">Tidak diketahui <strong>platform mana</strong> paling efektif, narasi paling engage, & negara audiens potensial</div></div>
+      </div>
+      <!-- Metode kanan -->
+      <div style="border:1px solid var(--rule);border-radius:7px;padding:11px 13px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:7px;">Metode Analisis</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;align-items:flex-start;gap:6px;"><div style="width:20px;height:20px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;color:white;font-weight:700;">①</span></div><div style="font-size:9px;color:var(--ink2);line-height:1.4;"><strong>BERTopic</strong> — Topic modeling multibahasa → <strong>37 topik</strong> dari 820 dok investasi</div></div>
+          <div style="display:flex;align-items:flex-start;gap:6px;"><div style="width:20px;height:20px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;color:white;font-weight:700;">②</span></div><div style="font-size:9px;color:var(--ink2);line-height:1.4;"><strong>XLM-RoBERTa</strong> — Sentiment analysis multilingual (cardiffnlp/twitter-xlm-roberta)</div></div>
+          <div style="display:flex;align-items:flex-start;gap:6px;"><div style="width:20px;height:20px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;color:white;font-weight:700;">③</span></div><div style="font-size:9px;color:var(--ink2);line-height:1.4;"><strong>Kruskal-Wallis + Mann-Whitney</strong> — Uji non-parametrik signifikansi engagement</div></div>
+          <div style="display:flex;align-items:flex-start;gap:6px;"><div style="width:20px;height:20px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;color:white;font-weight:700;">④</span></div><div style="font-size:9px;color:var(--ink2);line-height:1.4;"><strong>Investment Gap Matrix</strong> — LAKIN 2025 × Digital Presence (4 kuadran)</div></div>
+          <div style="display:flex;align-items:flex-start;gap:6px;"><div style="width:20px;height:20px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;color:white;font-weight:700;">⑤</span></div><div style="font-size:9px;color:var(--ink2);line-height:1.4;"><strong>Google Trends Geo</strong> — Proxy minat investor global (3 keyword query)</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- Dataset tabel — ANGKA AKTUAL dari notebook -->
+    <table class="mt">
+      <thead><tr><th>Platform</th><th>Total Post</th><th>Konten Investasi</th><th>% Relevan</th><th>Median Engagement</th><th>Sentimen Positif</th><th>Effectiveness Score</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pp ig">Instagram</span></td><td style="font-weight:700;text-align:center;">130</td><td style="text-align:center;">79</td><td style="font-weight:700;color:var(--green);text-align:center;">60,8%</td><td style="text-align:center;">0,0</td><td style="font-weight:700;color:var(--green);text-align:center;">33,1%</td><td style="font-weight:800;color:var(--navy);text-align:center;">0,550</td></tr>
+        <tr><td><span class="pp tt">TikTok</span></td><td style="font-weight:700;text-align:center;">258</td><td style="text-align:center;">32</td><td style="text-align:center;">12,4%</td><td style="font-weight:700;color:var(--navy);text-align:center;">48.183</td><td style="text-align:center;">6,2%</td><td style="font-weight:700;text-align:center;">0,436</td></tr>
+        <tr><td><span class="pp yt">YouTube</span></td><td style="font-weight:700;text-align:center;">2.860</td><td style="text-align:center;">549</td><td style="text-align:center;">19,2%</td><td style="text-align:center;">0,0</td><td style="text-align:center;">3,0%</td><td style="text-align:center;">0,315</td></tr>
+        <tr><td><span class="pp tw">Twitter/X</span></td><td style="font-weight:700;text-align:center;">1.109</td><td style="text-align:center;">161</td><td style="text-align:center;">14,5%</td><td style="text-align:center;">0,0</td><td style="text-align:center;">7,3%</td><td style="text-align:center;">0,228</td></tr>
+        <tr><td><span class="pp li">LinkedIn</span></td><td style="font-weight:700;text-align:center;">337</td><td style="text-align:center;">0*</td><td style="color:var(--red);text-align:center;">0,0%*</td><td style="text-align:center;">7,0</td><td style="text-align:center;">0,0%*</td><td style="color:var(--red);text-align:center;">0,011</td></tr>
+        <tr style="background:rgba(27,58,107,.04);"><td style="font-weight:800;">Total</td><td style="font-weight:800;text-align:center;">4.694</td><td style="font-weight:800;text-align:center;">820</td><td style="font-weight:800;text-align:center;">17,5%</td><td colspan="3" style="font-size:8px;color:var(--ink3);">*LinkedIn: data engagement tidak selengkap platform lain — bukan berarti tidak efektif (paling relevan untuk B2B) · Kruskal-Wallis H=2.395,23 p=0,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sfooter"><span>Sumber: Data scraping 5 platform medsos · Google Trends geoMap.csv Jun 2025–Jun 2026 · LAKIN 2025 Kemenpar</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 3 — PLATFORM EFFECTIVENESS + UJI STATISTIK ══════════ -->
+<div class="slide" id="s3">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Platform Effectiveness</div></div><div class="hbar-right">03 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">Platform Comparison: Uji Statistik & Effectiveness Score</div>
+    <div class="ssub">H = 2.395,23 · p = 0,000 · Semua 10 Pasang Pairwise Signifikan ✅</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;">
+
+      <!-- KOL 1: Uji statistik + effectiveness bars -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="background:rgba(27,58,107,.07);border-radius:5px;padding:9px 11px;border-left:3px solid var(--navy);margin-bottom:10px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:3px;">Uji Kruskal-Wallis — Non-Parametrik</div>
+          <div style="font-size:18px;font-weight:800;color:var(--navy);line-height:1;">H = 2.395,23 &nbsp; p = 0,0000</div>
+          <div style="font-size:9px;color:var(--ink3);margin-top:3px;">Perbedaan engagement antar platform <strong>sangat signifikan</strong> — bukan kebetulan dari ukuran sampel. Semua 10 pasang pairwise Mann-Whitney signifikan ✅</div>
+        </div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;">Effectiveness Score (Composite)</div>
+        <div style="margin-bottom:5px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span class="pp ig">Instagram</span><span style="font-size:9.5px;font-weight:800;color:var(--navy);">0,550</span></div><div style="height:6px;background:var(--offwhite);border-radius:3px;overflow:hidden;"><div style="width:55%;height:100%;background:var(--navy);border-radius:3px;"></div></div></div>
+        <div style="margin-bottom:5px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span class="pp tt">TikTok</span><span style="font-size:9.5px;font-weight:700;">0,436</span></div><div style="height:6px;background:var(--offwhite);border-radius:3px;overflow:hidden;"><div style="width:43.6%;height:100%;background:var(--blue);border-radius:3px;"></div></div></div>
+        <div style="margin-bottom:5px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span class="pp yt">YouTube</span><span style="font-size:9.5px;font-weight:700;">0,315</span></div><div style="height:6px;background:var(--offwhite);border-radius:3px;overflow:hidden;"><div style="width:31.5%;height:100%;background:var(--red);border-radius:3px;"></div></div></div>
+        <div style="margin-bottom:5px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span class="pp tw">Twitter/X</span><span style="font-size:9.5px;font-weight:700;">0,228</span></div><div style="height:6px;background:var(--offwhite);border-radius:3px;overflow:hidden;"><div style="width:22.8%;height:100%;background:var(--blue2);border-radius:3px;"></div></div></div>
+        <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span class="pp li">LinkedIn</span><span style="font-size:9.5px;color:var(--ink3);">0,011*</span></div><div style="height:6px;background:var(--offwhite);border-radius:3px;overflow:hidden;"><div style="width:1.1%;height:100%;background:#CBD5E1;border-radius:3px;"></div></div></div>
+        <div class="ibox" style="margin-top:6px;">
+          <div class="itag">Interpretasi Kritis</div>
+          <div class="itxt">IG: relevansi konten investasi tertinggi (60,8%) & sentimen positif 33,1% — tapi median engagement 0 (distribusi sangat skewed). TikTok: median engagement 48.183 tapi konten investasinya hanya 12,4%. LinkedIn score rendah karena <em>data terbatas</em>, bukan karena tidak efektif.</div>
+        </div>
+      </div>
+
+      <!-- KOL 2: Interpretasi per platform -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;">Profil Engagement per Platform</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:7px 9px;border-left:3px solid #7B3A8A;">
+            <div style="font-size:9px;font-weight:800;color:#7B3A8A;margin-bottom:3px;">📸 Instagram — Konten Investasi Paling Relevan</div>
+            <div style="font-size:8.5px;color:var(--ink2);line-height:1.4;">60,8% konten relevan investasi. Sentimen positif 33,1% (tertinggi). Tapi median engagement = 0 → mayoritas post hampir tidak berinteraksi. Hanya outlier viral yang menonjol. Hashtag eksplisit: #investasiwisata (24), #investasipariwisata (23).</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:7px 9px;border-left:3px solid #1A3040;">
+            <div style="font-size:9px;font-weight:800;color:#1A3040;margin-bottom:3px;">🎵 TikTok — Anomali Engagement Tinggi</div>
+            <div style="font-size:8.5px;color:var(--ink2);line-height:1.4;">Median engagement 48.183 — jauh tertinggi. Tapi konten yang viral <em>bukan konten investasi</em>, melainkan pariwisata viral. Saves & shares tinggi karena nature platform. Relevansi investasi hanya 12,4%.</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:7px 9px;border-left:3px solid #8B1A1A;">
+            <div style="font-size:9px;font-weight:800;color:#8B1A1A;margin-bottom:3px;">📺 YouTube — Volume Terbesar, Distribusi Skewed</div>
+            <div style="font-size:8.5px;color:var(--ink2);line-height:1.4;">2.860 post (61% dataset), tapi median engagement = 0. Ada beberapa video jutaan views (outlier), mayoritas hampir tidak ditonton. ROI frame paling kuat (43 konten) dibanding platform lain.</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:7px 9px;border-left:3px solid var(--navy);">
+            <div style="font-size:9px;font-weight:800;color:var(--navy);margin-bottom:3px;">💼 LinkedIn — First Mover Opportunity</div>
+            <div style="font-size:8.5px;color:var(--ink2);line-height:1.4;">Score 0,011 bukan karena buruk — data hanya 337 post & kolom engagement terbatas. Secara konseptual tetap platform terbaik untuk B2B investor institusional. Kemenpar belum ada di sini.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOL 3: Pairwise table + tweet frame -->
+      <div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Pairwise Mann-Whitney — Semua Signifikan</div>
+        <table class="mt" style="font-size:8.5px;margin-bottom:8px;">
+          <thead><tr><th>Pasangan Platform</th><th>p-value</th><th>Sig?</th></tr></thead>
+          <tbody>
+            <tr><td>Instagram vs LinkedIn</td><td>4.78e-39</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>Instagram vs TikTok</td><td>2.45e-59</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>Instagram vs YouTube</td><td>4.12e-42</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>TikTok vs YouTube</td><td>0.00e+00</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>TikTok vs Twitter</td><td>0.00e+00</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>YouTube vs Twitter</td><td>8.42e-170</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>YouTube vs LinkedIn</td><td>0.00e+00</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+            <tr><td>+ 3 pasang lainnya</td><td>semua</td><td style="color:var(--green);font-weight:700;">✅</td></tr>
+          </tbody>
+        </table>
+        <div class="ibox blue" style="margin-top:6px;">
+          <div class="itag">Implikasi</div>
+          <div class="itxt">Setiap platform melayani perilaku yang berbeda secara statistik — tidak bisa pakai strategi konten yang sama di semua platform. Kemenpar perlu strategi <em>platform-specific</em>.</div>
+        </div>
+        <div style="background:rgba(27,58,107,.06);border-radius:5px;padding:8px 10px;margin-top:7px;border:1px solid var(--rule);">
+          <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--ink3);letter-spacing:.1em;margin-bottom:4px;">Twitter/X — Frame Infrastruktur Terkuat</div>
+          <div style="font-size:8.5px;color:var(--ink2);">Frame Infrastruktur: 49 konten (terbanyak). Frame Kemitraan: 21 (terbanyak). Konsisten dengan sifat Twitter sebagai ruang diskusi kebijakan & B2B networking antara pemerintah dan sektor swasta.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Sumber: Cell 19 (Kruskal-Wallis) · Cell 31 (Effectiveness Score) · Data scraping 5 platform</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 4 — BERTOPIC + FRAMING ══════════ -->
+<div class="slide" id="s4">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Topic Modeling & Framing</div></div><div class="hbar-right">04 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">BERTopic (37 Topik) & Framing Analysis</div>
+    <div class="ssub">paraphrase-multilingual-MiniLM · 820 Dokumen Investasi · 6 Investment Frames</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;">
+
+      <!-- KOL 1: BERTopic -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">BERTopic — Top Topics (820 dok, 37 topik)</div>
+        <div class="hbr"><div class="lbl xs">T0 · Hotel/Vila Bali (SG)</div><div class="track"><div class="fill" style="width:100%;background:var(--red);"></div></div><div class="v" style="color:var(--red);font-weight:800;">259 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T-1 · Noise/Outlier</div><div class="track"><div class="fill" style="width:63%;background:#CBD5E1;"></div></div><div class="v">163 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T1 · Pariwisata & Ekonomi</div><div class="track"><div class="fill" style="width:34%;background:var(--green);"></div></div><div class="v" style="color:var(--green);">89 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T2 · Wisata Lokal</div><div class="track"><div class="fill" style="width:12%;background:var(--blue);"></div></div><div class="v">31 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T3 · Construction Lombok</div><div class="track"><div class="fill" style="width:12%;background:var(--blue);"></div></div><div class="v">30 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T4 · Lombok Property</div><div class="track"><div class="fill" style="width:8%;background:var(--navy);"></div></div><div class="v">20 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T5 · Resort Emerging Mkt</div><div class="track"><div class="fill" style="width:7%;background:var(--navy);"></div></div><div class="v">18 dok</div></div>
+        <div class="hbr"><div class="lbl xs">T6 · Danau Toba & Samosir</div><div class="track"><div class="fill" style="width:6%;background:var(--navy);"></div></div><div class="v">16 dok</div></div>
+        <div class="hbr"><div class="lbl xs">+ 29 topik lainnya</div><div class="track"><div class="fill" style="width:45%;background:var(--offwhite);"></div></div><div class="v" style="color:var(--ink3);">194 dok</div></div>
+        <div class="wbox warn" style="margin-top:7px;">
+          <div class="wtag">⚠️ Temuan Kritis</div>
+          <div class="wtxt"><strong>Topik 0 mendominasi 31,6%</strong> (259/820 dok) — isinya properti hotel/vila Bali untuk buyers Singapura. Ini <em>bukan</em> ekosistem investasi pariwisata yang dimaksud Kemenpar.</div>
+        </div>
+        <div class="wbox opp" style="margin-top:5px;">
+          <div class="wtag">💡 Ruang Kosong = Peluang</div>
+          <div class="wtxt">Topik 1 (Pariwisata & Ekonomi Indonesia) hanya 89 dok. Narasi makro investasi pariwisata Indonesia <strong>hampir tidak ada</strong> — ini ruang yang harus diisi Kemenpar.</div>
+        </div>
+      </div>
+
+      <!-- KOL 2: Framing heatmap ANGKA AKTUAL -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Framing Investasi × Platform (Jumlah Konten Aktual)</div>
+        <div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 1fr;gap:1px;background:var(--rule);border-radius:4px;overflow:hidden;font-size:8.5px;">
+          <div class="hm-head" style="text-align:left;padding-left:6px;">Frame</div>
+          <div class="hm-head">IG</div><div class="hm-head">TT</div><div class="hm-head">TW</div><div class="hm-head">YT</div>
+
+          <div class="hm-row-lbl" style="background:white;">ROI/Return</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.08);">10</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.04);">2</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.08);">9</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.22);font-weight:800;color:var(--navy);">43</div>
+
+          <div class="hm-row-lbl" style="background:#F8FAFC;">Infrastruktur</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.16);">27</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.10);">11</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.22);font-weight:800;color:var(--navy);">49</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.04);">5</div>
+
+          <div class="hm-row-lbl" style="background:white;">Regulasi</div>
+          <div class="hm-cell" style="background:white;">6</div>
+          <div class="hm-cell" style="background:white;">2</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.06);">10</div>
+          <div class="hm-cell" style="background:white;">2</div>
+
+          <div class="hm-row-lbl" style="background:#F8FAFC;">Destinasi/Lokasi</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.14);">38</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.07);">10</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.12);">34</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.85);font-weight:800;color:white;">256</div>
+
+          <div class="hm-row-lbl" style="background:white;">Sustainability</div>
+          <div class="hm-cell" style="background:white;">15</div>
+          <div class="hm-cell" style="background:white;">4</div>
+          <div class="hm-cell" style="background:white;">8</div>
+          <div class="hm-cell" style="background:white;">7</div>
+
+          <div class="hm-row-lbl" style="background:#F8FAFC;">Kemitraan</div>
+          <div class="hm-cell" style="background:#F8FAFC;">4</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.04);">5</div>
+          <div class="hm-cell" style="background:rgba(27,58,107,.10);font-weight:700;">21</div>
+          <div class="hm-cell" style="background:#F8FAFC;">1</div>
+        </div>
+        <div style="font-size:7.5px;color:var(--ink3);margin-top:3px;">Semakin gelap = lebih dominan. Semua angka dari framing analysis scraping aktual.</div>
+        <div class="wbox warn" style="margin-top:6px;">
+          <div class="wtag">🚨 Gap Kritis — Sustainability</div>
+          <div class="wtxt">Frame <strong>Sustainability hampir nol</strong> di semua platform (maks 15 di IG). Padahal ini daya jual utama untuk investor ESG dari <strong>Eropa & Jepang</strong> — potensi pasar yang belum terjamah sama sekali.</div>
+        </div>
+      </div>
+
+      <!-- KOL 3: Hashtag per platform + insight -->
+      <div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Top Hashtag per Platform (Data Aktual)</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:6px 9px;border-left:3px solid #7B3A8A;">
+            <div style="font-size:8px;font-weight:800;color:#7B3A8A;margin-bottom:2px;">Instagram</div>
+            <div style="font-size:8.5px;color:var(--ink2);">#investasiwisata (24) · #investasipariwisata (23) · #wonderfulindonesia (6)</div>
+            <div style="font-size:8px;color:var(--ink3);margin-top:2px;">→ Hashtag eksplisit & targeted — sinyal audiens aktif mencari konten investasi</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:6px 9px;border-left:3px solid #1A3040;">
+            <div style="font-size:8px;font-weight:800;color:#1A3040;margin-bottom:2px;">TikTok</div>
+            <div style="font-size:8.5px;color:var(--ink2);">#fyp (42) · #pariwisata (23) · #idebisnis (19)</div>
+            <div style="font-size:8px;color:var(--ink3);margin-top:2px;">→ Hashtag viral non-spesifik — reach luas tapi audiens tidak tertarget investor</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:6px 9px;border-left:3px solid #1A4A6A;">
+            <div style="font-size:8px;font-weight:800;color:#1A4A6A;margin-bottom:2px;">Twitter/X</div>
+            <div style="font-size:8.5px;color:var(--ink2);">#kintamani (48) · #investasi (29) · #pariwisata (17)</div>
+            <div style="font-size:8px;color:var(--ink3);margin-top:2px;">→ Diskusi lokasi spesifik + kebijakan, audiens lebih informed</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:5px;padding:6px 9px;border-left:3px solid #8B1A1A;">
+            <div style="font-size:8px;font-weight:800;color:#8B1A1A;margin-bottom:2px;">YouTube</div>
+            <div style="font-size:8.5px;color:var(--ink2);">#shorts (22) · #danautoba (14) · #investment (13)</div>
+            <div style="font-size:8px;color:var(--ink3);margin-top:2px;">→ Keyword bahasa Inggris (#investment) = sinyal audiens internasional</div>
+          </div>
+        </div>
+        <div class="wbox tip" style="margin-top:7px;">
+          <div class="wtag">📌 Implikasi Strategi Konten</div>
+          <div class="wtxt">YouTube ROI frame (43 konten) adalah modal awal terbaik untuk dikembangkan. Twitter frame Kemitraan (21) menunjukkan ruang diskusi kebijakan yang bisa dimasuki Kemenpar sebagai regulator.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Sumber: Cell 23 (BERTopic output aktual) · Cell 25 (framing analysis) · Cell 21 (hashtag Counter per platform)</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 5 — DISTRIBUSI DESTINASI + GEOGRAPHY ══════════ -->
+<div class="slide" id="s5">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Distribusi Destinasi & Geography</div></div><div class="hbar-right">05 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">Distribusi Konten per Destinasi & Audiens Global</div>
+    <div class="ssub">Ketimpangan Ekstrem Bali vs Lainnya · YouTube Views · Google Trends Geo</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;">
+
+      <!-- KOL 1: Post per destinasi -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Volume Post per Destinasi (Semua Platform, Aktual)</div>
+        <div class="hbr"><div class="lbl xs" style="font-weight:700;color:var(--gold);">Bali</div><div class="track"><div class="fill" style="width:100%;background:var(--gold);"></div></div><div class="v" style="color:var(--gold);font-weight:800;">891</div></div>
+        <div class="hbr"><div class="lbl xs">Lombok-Gili</div><div class="track"><div class="fill" style="width:42.8%;background:var(--navy);"></div></div><div class="v">381</div></div>
+        <div class="hbr"><div class="lbl xs">Labuan Bajo</div><div class="track"><div class="fill" style="width:35.8%;background:var(--navy);"></div></div><div class="v">319</div></div>
+        <div class="hbr"><div class="lbl xs">Danau Toba</div><div class="track"><div class="fill" style="width:33.7%;background:var(--blue);"></div></div><div class="v">300</div></div>
+        <div class="hbr"><div class="lbl xs">Kepulauan Riau</div><div class="track"><div class="fill" style="width:21.7%;background:var(--navy);"></div></div><div class="v">193</div></div>
+        <div class="hbr"><div class="lbl xs">Raja Ampat</div><div class="track"><div class="fill" style="width:20.9%;background:var(--navy);"></div></div><div class="v">186</div></div>
+        <div class="hbr"><div class="lbl xs">Bromo-Tengger</div><div class="track"><div class="fill" style="width:15%;background:var(--blue2);"></div></div><div class="v">134</div></div>
+        <div class="hbr"><div class="lbl xs">Greater Jakarta</div><div class="track"><div class="fill" style="width:12.3%;background:var(--blue2);"></div></div><div class="v">110</div></div>
+        <div class="hbr"><div class="lbl xs">Borobudur-Jogja</div><div class="track"><div class="fill" style="width:12%;background:var(--blue2);"></div></div><div class="v">107</div></div>
+        <div class="hbr"><div class="lbl xs">Bangka Belitung</div><div class="track"><div class="fill" style="width:6.6%;background:var(--blue2);"></div></div><div class="v">59</div></div>
+        <div class="hbr"><div class="lbl xs" style="color:var(--red);">Manado-Likupang</div><div class="track"><div class="fill" style="width:1%;background:var(--red);"></div></div><div class="v" style="color:var(--red);font-weight:800;">9</div></div>
+        <div class="hbr"><div class="lbl xs" style="color:var(--red);">Wakatobi</div><div class="track"><div class="fill" style="width:0.2%;background:var(--red);"></div></div><div class="v" style="color:var(--red);font-weight:800;">2</div></div>
+        <div class="hbr"><div class="lbl xs" style="color:var(--red);">Morotai</div><div class="track"><div class="fill" style="width:0.1%;background:var(--red);"></div></div><div class="v" style="color:var(--red);font-weight:800;">1</div></div>
+        <div class="wbox warn" style="margin-top:6px;">
+          <div class="wtag">⚠️ Ketimpangan Ekstrem</div>
+          <div class="wtxt">Bali: 891 post. Morotai: 1 post. Danau Toba <strong>300 post tapi capaian LAKIN hanya 24,21%</strong> — banyak konten tapi isinya bukan narasi investasi yang converting.</div>
+        </div>
+      </div>
+
+      <!-- KOL 2: Platform diversity + YouTube views -->
+      <div style="border-right:1px solid var(--rule);padding-right:12px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Platform Diversity per Destinasi</div>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
+          <div style="border:1px solid var(--rule);border-radius:4px;padding:6px 9px;display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;">4</div>
+            <div style="font-size:8.5px;color:var(--ink2);">Bali, Borobudur, Bromo, Grt. Jakarta, Labuan Bajo, Kepri</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:4px;padding:6px 9px;display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;">3</div>
+            <div style="font-size:8.5px;color:var(--ink2);">Bangka Belitung, Danau Toba, Lombok</div>
+          </div>
+          <div style="border:1px solid var(--rule);border-radius:4px;padding:6px 9px;display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:5px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;">2</div>
+            <div style="font-size:8.5px;color:var(--ink2);">Manado-Likupang</div>
+          </div>
+          <div style="border:1px solid rgba(200,16,46,.3);border-radius:4px;padding:6px 9px;display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:5px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;">1</div>
+            <div style="font-size:8.5px;color:var(--ink2);">Raja Ampat — <strong style="color:var(--red);">capaian 275,26%!</strong> Investasi masuk tanpa ekosistem konten digital.</div>
+          </div>
+          <div style="border:1px solid rgba(200,16,46,.3);border-radius:4px;padding:6px 9px;display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:5px;background:#555;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;">0</div>
+            <div style="font-size:8.5px;color:var(--ink2);">Wakatobi (117,43%) & Morotai (124,25%) — tidak hadir di satu platform pun</div>
+          </div>
+        </div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px;">Rata-rata Views YouTube per Destinasi</div>
+        <div class="hbr"><div class="lbl xs" style="font-weight:700;">Bali</div><div class="track"><div class="fill" style="width:100%;background:var(--navy);"></div></div><div class="v" style="font-weight:800;">32.505</div></div>
+        <div class="hbr"><div class="lbl xs">Danau Toba</div><div class="track"><div class="fill" style="width:14.7%;background:var(--blue);"></div></div><div class="v">4.783</div></div>
+        <div class="hbr"><div class="lbl xs">Raja Ampat</div><div class="track"><div class="fill" style="width:8.7%;background:var(--blue2);"></div></div><div class="v">2.827</div></div>
+        <div class="hbr"><div class="lbl xs">Batam/Kepri</div><div class="track"><div class="fill" style="width:1.8%;background:var(--blue2);"></div></div><div class="v">581</div></div>
+        <div class="hbr"><div class="lbl xs">Lombok</div><div class="track"><div class="fill" style="width:1.6%;background:var(--blue2);"></div></div><div class="v">518</div></div>
+        <div style="font-size:8px;color:var(--ink3);margin-top:3px;">Bali mendapat views 6,8× lebih banyak dari Danau Toba (urutan ke-2).</div>
+      </div>
+
+      <!-- KOL 3: Google Trends -->
+      <div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;">Google Trends — Minat Investor Global (geoMap.csv)</div>
+        <div style="background:var(--navy);border-radius:6px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);margin-bottom:6px;">3 Query Keyword Dianalisis (Jun 2025 – Jun 2026)</div>
+          <div style="font-size:8.5px;color:rgba(255,255,255,.7);margin-bottom:3px;">① indonesia investment tourism</div>
+          <div style="font-size:8.5px;color:rgba(255,255,255,.7);margin-bottom:3px;">② bali investment tourism</div>
+          <div style="font-size:8.5px;color:rgba(255,255,255,.7);">③ invest in indonesia tourism</div>
+        </div>
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px;">Negara dengan Search Interest (Composite Score)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇦🇺 Australia</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇬🇧 UK</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇸🇬 Singapore</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇯🇵 Japan</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇨🇦 Canada</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇰🇷 S.Korea</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇩🇪 Germany</span>
+          <span style="background:rgba(27,58,107,.15);color:var(--navy);font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">🇺🇸 USA</span>
+          <span style="background:rgba(232,160,0,.15);color:#7A5500;font-size:8px;padding:3px 8px;border-radius:20px;font-weight:700;">+ lebih banyak</span>
+        </div>
+        <div class="ibox red" style="margin-bottom:7px;">
+          <div class="itag">Temuan: Bali-focused vs Indonesia-general</div>
+          <div class="itxt">Banyak negara hanya mencari "Bali investment" — bukan Indonesia secara umum. Ini menunjukkan perlunya kampanye Kemenpar untuk <strong>diversifikasi narasi</strong> ke destinasi lain.</div>
+        </div>
+        <div class="ibox gold">
+          <div class="itag">Cross-reference: Trends × Sosmed</div>
+          <div class="itxt">Negara-negara dengan search interest tinggi <strong>belum terjangkau konten sosmed</strong> yang ada di dataset. Ini audiens potensial yang menunggu dijangkau dengan konten yang tepat.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Sumber: Cell 13 (destinasi tag) · Cell 27 (YouTube views) · Cell 37 (platform diversity) · Google Trends geoMap.csv Jun 2025–Jun 2026</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 6 — INVESTMENT GAP MATRIX ══════════ -->
+<div class="slide" id="s6">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Investment Gap Matrix</div></div><div class="hbar-right">06 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">Investment Gap Matrix — Centerpiece Analisis</div>
+    <div class="ssub">LAKIN 2025 × Digital Presence · 4 Kuadran · Prioritas Kampanye Kemenpar</div>
+    <div style="display:grid;grid-template-columns:1fr 270px;gap:14px;flex:1;align-items:stretch;">
+      <div>
+        <div class="cw" style="height:330px;"><canvas id="cGap"></canvas></div>
+        <div class="ibox gold" style="margin-top:8px;">
+          <div class="itag">Kontribusi Analitik Utama</div>
+          <div class="itxt">Menghubungkan data operasional BKPM (LAKIN 2025) dengan data promosi digital untuk <strong>pertama kalinya</strong>. Sumbu Y = capaian target investasi aktual. Sumbu X = jumlah post investasi dari scraping nyata. Ukuran bubble = realisasi investasi (Juta Rp).</div>
+        </div>
+      </div>
+      <!-- Kanan: klasifikasi -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px;">Klasifikasi Kuadran & Temuan</div>
+        <div style="background:rgba(14,124,74,.08);border-left:3px solid var(--green);border-radius:0 5px 5px 0;padding:7px 9px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:2px;">Q1 · Mature & Well-Promoted</div>
+          <div style="font-size:8.5px;color:var(--ink2);">Bali (138,52%), Greater Jakarta (146,21%), Lombok (120,24%), Kepri (130,78%). Pertahankan momentum — ini destinasi yang ekosistem digitalnya sudah terbentuk.</div>
+        </div>
+        <div style="background:rgba(74,123,200,.1);border-left:3px solid var(--blue);border-radius:0 5px 5px 0;padding:7px 9px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:3px;">Q2 ← PRIORITAS KAMPANYE KEMENPAR</div>
+          <div style="font-size:8.5px;color:var(--ink2);margin-bottom:4px;">Realisasi investasi TINGGI, promosi digital MINIM:</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Labuan Bajo</span><span style="color:var(--blue);font-weight:800;">483,20%</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Raja Ampat</span><span style="color:var(--blue);font-weight:800;">275,26% · 1 platform</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Borobudur-Jogja</span><span style="color:var(--blue);font-weight:800;">169,08%</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Manado-Likupang</span><span style="color:var(--blue);font-weight:800;">167,81% · 9 post</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Wakatobi</span><span style="color:var(--blue);font-weight:800;">117,43% · 2 post</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:8.5px;"><span style="font-weight:700;">Morotai</span><span style="color:var(--blue);font-weight:800;">124,25% · 1 post</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(200,16,46,.07);border-left:3px solid var(--red);border-radius:0 5px 5px 0;padding:7px 9px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:2px;">Q3 · Over-Promoted / Underperform</div>
+          <div style="font-size:8.5px;color:var(--ink2);">Bromo-Tengger-Semeru: 82,87% capaian — satu-satunya di bawah target dengan konten yang ada. Perlu audit kualitas narasi — apakah konten sudah investment-focused?</div>
+        </div>
+        <div style="background:rgba(232,160,0,.08);border-left:3px solid var(--gold);border-radius:0 5px 5px 0;padding:7px 9px;">
+          <div style="font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8A5E00;margin-bottom:2px;">Q4 · Hidden Gem / Needs Push</div>
+          <div style="font-size:8.5px;color:var(--ink2);"><strong>Danau Toba</strong>: 300 post tapi capaian <strong>hanya 24,21%</strong> (Rp 43,18 M dari target Rp 178,34 M). Konten banyak tapi bukan narasi investasi yang converting — kasus paling kritis.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Sumber: LAKIN 2025 Kemenpar Tabel 3.9 · Cell 43 (Investment Gap Matrix) · df_dest × LAKIN join — semua angka dari data nyata</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ SLIDE 7 — REKOMENDASI ══════════ -->
+<div class="slide" id="s7">
+  <div class="top-strip"></div>
+  <div class="hbar"><div class="hbar-left"><div class="hbar-flag"><div class="r"></div><div class="w"></div></div><div class="hbar-title">Kemenpar SDCC 2025–2026 · Rekomendasi Strategis</div></div><div class="hbar-right">07 / 07</div></div>
+  <div class="sbody pad">
+    <div class="stitle">Prioritas & Rekomendasi Strategis</div>
+    <div class="ssub">3 Prioritas Bertahap · Platform-Specific · Berbasis Temuan Data Nyata</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:9px;">
+      <div class="rec">
+        <div class="rnum">PRIORITAS 1 · 0–3 BULAN</div>
+        <div class="rtitle">LinkedIn: First Mover B2B</div>
+        <div class="rbody">Buat akun resmi Kemenpar <em>khusus konten investasi</em> (terpisah dari akun pariwisata umum). Konten perdana: data realisasi LAKIN per destinasi dalam format infografis. Target negara: Singapore, Australia, UK, Japan (composite Google Trends score tertinggi). Frame: <strong>ROI + data BKPM/LAKIN</strong>.</div>
+        <div style="margin-top:7px;font-size:8.5px;color:var(--ink3);">Dasar: LinkedIn = channel B2B investor institusional. Kemenpar belum ada → first mover advantage.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;"><span class="bd ok">ROI + Data LAKIN</span><span class="bd ok">Infografis</span><span class="bd ok">3×/minggu</span></div>
+        <div class="rtag"><span class="pp li">LinkedIn</span> · Target: investor institusional</div>
+      </div>
+      <div class="rec">
+        <div class="rnum">PRIORITAS 2 · 3–6 BULAN</div>
+        <div class="rtitle">YouTube: Seri Destinasi Investment</div>
+        <div class="rbody">Produksi seri "Indonesia Investment Destination" — 1 video per destinasi Q2 Matrix. Format dokumenter 8–12 menit, Bahasa Inggris + subtitle Indonesia. Prioritas: <strong>Raja Ampat</strong> (275,26%), <strong>Manado-Likupang</strong> (167,81%), <strong>Borobudur-Jogja</strong> (169,08%). Frame: ROI + sustainability (gap terbesar) + kemudahan regulasi OSS.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:7px;"><span class="bd high">ROI + Sustainability</span><span class="bd high">Dokumenter 10 mnt</span><span class="bd high">2×/bulan</span></div>
+        <div class="rtag"><span class="pp yt">YouTube</span> · Target: investor retail internasional</div>
+      </div>
+      <div class="rec">
+        <div class="rnum">PRIORITAS 3 · ONGOING</div>
+        <div class="rtitle">IG + Twitter: Isi Gap Narasi Topik 1</div>
+        <div class="rbody">Isi kluster Topik 1 BERTopic (Pariwisata & Ekonomi Indonesia, 89 dok) yang hampir kosong. Gunakan hashtag eksplisit: <strong>#InvestasiPariwisata</strong>, <strong>#IndonesiaInvestmentDestination</strong>. Update Investment Gap Matrix setiap LAKIN terbit. Tambah scraping Malaysia, Vietnam, Thailand untuk benchmark kompetitor.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:7px;"><span class="bd near">Carousel IG</span><span class="bd near">Thread Twitter</span><span class="bd near">5×/minggu</span></div>
+        <div class="rtag"><span class="pp ig">Instagram</span> <span class="pp tw">Twitter</span> · Awareness + Policy makers</div>
+      </div>
+    </div>
+    <table class="mt" style="font-size:9px;margin-bottom:8px;">
+      <thead><tr><th>Platform</th><th>Target Audiens</th><th>Frame Konten Prioritas</th><th>Format</th><th>Frekuensi</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pp li">LinkedIn</span></td><td>Investor institusional (SG, AU, UK, JP)</td><td>ROI + Data LAKIN aktual</td><td>Artikel + Infografis</td><td style="font-weight:700;">3×/minggu</td></tr>
+        <tr><td><span class="pp yt">YouTube</span></td><td>Investor retail internasional</td><td>Destinasi Q2 + Sustainability</td><td>Dokumenter 8–12 menit</td><td style="font-weight:700;">2×/bulan</td></tr>
+        <tr><td><span class="pp ig">Instagram</span></td><td>Awareness funnel teratas</td><td>Destinasi + angka investasi LAKIN</td><td>Carousel</td><td style="font-weight:700;">5×/minggu</td></tr>
+        <tr><td><span class="pp tw">Twitter/X</span></td><td>Policy makers, media, B2B</td><td>Infrastruktur + Kemitraan</td><td>Thread + data</td><td style="font-weight:700;">Daily</td></tr>
+      </tbody>
+    </table>
+    <div style="background:var(--navy);border-radius:6px;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:10px;color:rgba(255,255,255,.75);line-height:1.55;max-width:680px;font-style:italic;">"Data ini adalah baseline — efektivitas kampanye Kemenpar baru bisa diukur setelah konten diproduksi, dengan metrik yang sama yang digunakan dalam analisis ini."</div>
+      <div style="text-align:right;flex-shrink:0;padding-left:16px;">
+        <div style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:3px;">Universitas Airlangga</div>
+        <div style="font-size:9.5px;font-weight:700;color:white;">FTMM · SDCC 2025–2026</div>
+      </div>
+    </div>
+  </div>
+  <div class="sfooter"><span>Sumber: Temuan BERTopic, Investment Gap Matrix, Google Trends, Platform Effectiveness Score — semua berbasis data scraping aktual</span><span>SDCC 2025–2026 · Universitas Airlangga FTMM</span></div>
+</div>
+
+<!-- ══════════ NAV ══════════ -->
+<div class="deck-nav">
+  <button class="nbtn" onclick="go(-1)">← Prev</button>
+  <div class="ncounter" id="counter">1 / 7</div>
+  <div class="ndots" id="dots"></div>
+  <button class="nbtn" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+const DEF_OPT = {
+  responsive:true, maintainAspectRatio:false,
+  animation:{duration:0},
+  plugins:{legend:{labels:{font:{family:'Plus Jakarta Sans',size:9},boxWidth:9}}}
+};
+
+/* ─── SLIDE 6 — Investment Gap Matrix bubble ─── */
+new Chart(document.getElementById('cGap'),{
+  type:'bubble',
+  data:{
+    datasets:[
+      {
+        label:'Q1: Mature & Well-Promoted',
+        backgroundColor:'rgba(14,124,74,.28)', borderColor:'#0E7C4A', borderWidth:2,
+        data:[
+          {x:356,y:138.5,r:15,_lbl:'Bali'},
+          {x:59, y:120.2,r:11,_lbl:'Lombok'},
+          {x:32, y:146.2,r:10,_lbl:'Grt. Jakarta'},
+          {x:18, y:133.1,r:7, _lbl:'Bangka Bel.'},
+          {x:37, y:130.8,r:9, _lbl:'Kepri'},
+        ]
+      },
+      {
+        label:'Q2: Mature & Under-Promoted ← Prioritas',
+        backgroundColor:'rgba(74,123,200,.32)', borderColor:'#4A7BC8', borderWidth:2,
+        data:[
+          {x:1, y:167.8,r:8, _lbl:'Manado-Likupang'},
+          {x:15,y:169.1,r:10,_lbl:'Borobudur-Jogja'},
+          {x:2, y:275.3,r:12,_lbl:'Raja Ampat'},
+          {x:18,y:483.2,r:17,_lbl:'Labuan Bajo'},
+          {x:0, y:124.3,r:5, _lbl:'Morotai'},
+          {x:0, y:117.4,r:5, _lbl:'Wakatobi'},
+        ]
+      },
+      {
+        label:'Q3: Over-Promoted / Underperform',
+        backgroundColor:'rgba(200,16,46,.28)', borderColor:'#C8102E', borderWidth:2,
+        data:[{x:14,y:82.9,r:10,_lbl:'Bromo-Tengger-Semeru'}]
+      },
+      {
+        label:'Q4: Hidden Gem — Danau Toba',
+        backgroundColor:'rgba(232,160,0,.32)', borderColor:'#E8A000', borderWidth:2,
+        data:[{x:33,y:24.2,r:13,_lbl:'Danau Toba'}]
+      }
+    ]
+  },
+  options:{
+    ...DEF_OPT,
+    plugins:{
+      legend:{labels:{font:{size:9},boxWidth:9}},
+      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return ` ${d._lbl}: ${d.y}% capaian, ${d.x} post investasi`;}}}
+    },
+    scales:{
+      x:{title:{display:true,text:'Digital Presence — Jumlah Post Investasi dari Scraping',font:{size:9}},grid:{color:'#F0F2F5'},ticks:{font:{size:9}}},
+      y:{title:{display:true,text:'Capaian Target Investasi LAKIN 2025 (%)',font:{size:9}},grid:{color:'#F0F2F5'},ticks:{font:{size:9},callback:v=>v+'%'}}
+    }
+  },
+  plugins:[{
+    id:'quadLines',
+    afterDraw(chart){
+      const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=chart;
+      const midX=x.getPixelForValue(40);
+      const midY=y.getPixelForValue(100);
+      ctx.save();
+      ctx.strokeStyle='rgba(90,96,112,0.3)';ctx.setLineDash([5,4]);ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(midX,top);ctx.lineTo(midX,bottom);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(left,midY);ctx.lineTo(right,midY);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font='700 8px Plus Jakarta Sans';ctx.fillStyle='#C8102E';
+      ctx.fillText('Target 100% LAKIN',left+4,midY-4);
+      ctx.restore();
+    }
+  }]
+});
+
+/* ─── NAVIGATION ─── */
+const slides=document.querySelectorAll('.slide');
+const TOTAL=slides.length;
+let cur=0;
+const dots=document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='ndot'+(i===0?' active':'');
+  d.onclick=()=>go(i-cur);
+  dots.appendChild(d);
+}
+function go(delta){
+  slides[cur].classList.remove('active');
+  dots.children[cur].classList.remove('active');
+  cur=(cur+delta+TOTAL)%TOTAL;
+  slides[cur].classList.add('active');
+  dots.children[cur].classList.add('active');
+  document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')  go(-1);
+});
+</script>
+</body>
+</html>

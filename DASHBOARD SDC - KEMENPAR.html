@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Analisis Promosi Digital Investasi Pariwisata | Kementerian Pariwisata</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+:root {
+  --navy: #1B3A5C;
+  --navy-mid: #234872;
+  --gold: #C8922A;
+  --gold-pale: #FDF3E1;
+  --red: #C0392B;
+  --green: #1E6B4A;
+  --green-bg: #E8F5EE;
+  --amber: #D47F28;
+  --sky: #2E6EA6;
+  --sky-bg: #EDF3FA;
+  --bg: #F4F5F8;
+  --white: #FFFFFF;
+  --text-1: #1A202C;
+  --text-2: #4A5568;
+  --text-3: #9AA5B4;
+  --border: #E4E8EF;
+  --shadow: 0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+  --r: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text-1);display:flex;min-height:100vh;font-size:14px;line-height:1.5;}
+
+/* SIDEBAR */
+.sidebar{width:210px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;min-height:100vh;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.1);}
+.sb-brand-row{display:flex;align-items:center;gap:9px;}
+.sb-icon{width:32px;height:32px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-icon svg{width:18px;height:18px;fill:white;}
+.sb-name{font-weight:700;font-size:13px;color:white;line-height:1.2;}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;}
+.sb-badge{display:inline-block;margin-top:8px;background:rgba(200,146,42,.2);border:1px solid rgba(200,146,42,.35);color:rgba(229,180,90,.9);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.05em;}
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto;}
+.sb-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:7px 16px 3px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;transition:all .12s;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;border-left:3px solid transparent;user-select:none;}
+.sb-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);}
+.sb-item.active{color:white;background:rgba(200,146,42,.14);border-left-color:var(--gold);}
+.sb-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;}
+.sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;color:rgba(255,255,255,.25);line-height:1.6;}
+
+/* MAIN */
+.main{margin-left:210px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.tb-breadcrumb{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text-2);}
+.tb-breadcrumb span{color:var(--text-3);}
+.tb-breadcrumb strong{color:var(--text-1);font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-count{background:var(--gold-pale);border:1px solid rgba(200,146,42,.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.tb-avatar{width:30px;height:30px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+
+/* CONTENT AREA */
+.page{display:none;flex:1;}
+.page.active{display:flex;gap:0;}
+.page-inner{flex:1;padding:18px 22px;min-width:0;}
+.page-side{width:270px;flex-shrink:0;padding:18px 16px 18px 0;}
+
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.sec-title{font-size:14px;font-weight:700;color:var(--text-1);}
+.sec-action{font-size:12px;color:var(--sky);font-weight:500;cursor:pointer;}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.mcard{background:white;border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:3px solid var(--accent, var(--navy));}
+.mcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.mcard-icon{width:33px;height:33px;border-radius:8px;background:var(--icon-bg,var(--sky-bg));display:flex;align-items:center;justify-content:center;}
+.mcard-icon svg{width:16px;height:16px;stroke:var(--icon-clr,var(--sky));fill:none;stroke-width:2;}
+.mbadge{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:12px;}
+.mbadge.up{background:var(--green-bg);color:var(--green);}
+.mbadge.down{background:#FCEAE8;color:var(--red);}
+.mbadge.neu{background:#F1F3F5;color:var(--text-2);}
+.mval{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1;}
+.mlbl{font-size:11.5px;color:var(--text-2);margin-top:3px;font-weight:500;}
+
+/* CARDS */
+.card{background:white;border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border);padding:16px;}
+.card+.card{margin-top:14px;}
+.chart-wrap{position:relative;}
+.chart-wrap canvas{display:block;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g2w{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tbl th{text-align:left;padding:7px 11px;background:#F8FAFC;color:var(--text-2);font-weight:600;font-size:10.5px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;}
+.tbl td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--text-1);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:#FAFBFC;}
+.tbl .mono{font-family:'DM Mono',monospace;font-size:12px;}
+
+/* STATUS BADGES */
+.sbadge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.sbadge.high{background:var(--green-bg);color:var(--green);}
+.sbadge.ok{background:var(--sky-bg);color:var(--sky);}
+.sbadge.near{background:#FFF7ED;color:var(--amber);}
+.sbadge.low{background:#FCEAE8;color:var(--red);}
+
+/* SIDE CARDS */
+.scard{background:white;border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px;overflow:hidden;}
+.scard-hdr{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.scard-title{font-size:12.5px;font-weight:700;color:var(--text-1);}
+.scard-body{padding:10px 14px;}
+.srow{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
+.srow:last-child{border-bottom:none;}
+.savatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;}
+.sinfo{flex:1;min-width:0;}
+.sname{font-size:12px;font-weight:600;color:var(--text-1);}
+.sdesc{font-size:11px;color:var(--text-2);margin-top:1px;line-height:1.4;}
+.smeta{font-size:11px;color:var(--text-3);white-space:nowrap;}
+
+/* PROGRESS */
+.pbar-wrap{margin-bottom:9px;}
+.pbar-lbl{display:flex;justify-content:space-between;margin-bottom:3px;font-size:11.5px;}
+.pbar-lbl span:first-child{font-weight:500;}
+.pbar-lbl span:last-child{font-weight:600;color:var(--text-2);}
+.pbar{height:6px;background:#EEF1F5;border-radius:3px;overflow:hidden;}
+.pfill{height:100%;border-radius:3px;transition:width .5s ease;}
+
+/* INSIGHT BOX */
+.ibox{background:var(--gold-pale);border:1px solid rgba(200,146,42,.2);border-radius:7px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--text-2);line-height:1.6;}
+.ibox strong{color:var(--gold);display:block;margin-bottom:3px;font-size:12px;}
+
+/* UPLOAD ZONE */
+.upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.ucard{background:white;border-radius:var(--r);border:2px dashed var(--border);padding:14px;text-align:center;transition:all .15s;cursor:pointer;position:relative;}
+.ucard:hover,.ucard.drag-over{border-color:var(--navy);background:#F8FAFD;}
+.ucard.loaded{border-style:solid;border-color:var(--green);background:var(--green-bg);}
+.ucard.error{border-style:solid;border-color:var(--red);background:#FCEAE8;}
+.ucard input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.uplatform{font-size:12px;font-weight:700;color:var(--text-1);margin-bottom:3px;}
+.uicon{font-size:20px;margin-bottom:6px;display:block;}
+.ustatus{font-size:11px;color:var(--text-2);margin-top:4px;}
+.ustatus.ok{color:var(--green);font-weight:600;}
+.ustatus.err{color:var(--red);font-weight:600;}
+.urows{font-size:10px;color:var(--text-3);margin-top:2px;}
+.ucols{font-size:9.5px;color:var(--text-3);margin-top:2px;line-height:1.4;}
+
+/* COLUMN MAPPER */
+.mapper-section{background:white;border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:14px;}
+.mapper-title{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-1);}
+.mapper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+.mapper-row{display:flex;align-items:center;gap:8px;}
+.mapper-lbl{font-size:11.5px;font-weight:600;color:var(--text-2);width:110px;flex-shrink:0;}
+.mapper-sel{flex:1;font-size:11.5px;padding:4px 6px;border:1px solid var(--border);border-radius:5px;background:white;color:var(--text-1);font-family:inherit;outline:none;}
+.mapper-sel:focus{border-color:var(--navy);}
+.mapper-req{color:var(--red);font-size:10px;margin-left:2px;}
+
+/* ANALYZE BUTTON */
+.analyze-btn{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:white;font-weight:600;font-size:13px;padding:9px 20px;border-radius:7px;border:none;cursor:pointer;transition:background .15s;font-family:inherit;}
+.analyze-btn:hover{background:var(--navy-mid);}
+.analyze-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+/* CHIP TAGS */
+.chip{display:inline-block;background:#F1F3F5;border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:11.5px;font-weight:500;margin:3px;color:var(--text-1);}
+
+/* HASHTAG ROW */
+.htag-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.htag-row:last-child{border-bottom:none;}
+.htag-name{font-weight:500;}
+.htag-count{font-weight:700;color:var(--text-2);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;color:var(--text-3);}
+.empty svg{width:40px;height:40px;stroke:var(--text-3);fill:none;stroke-width:1.5;margin-bottom:10px;}
+.empty p{font-size:13px;}
+
+/* NOTICE */
+.notice{background:var(--sky-bg);border:1px solid rgba(46,110,166,.2);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--sky);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;}
+.notice svg{width:14px;height:14px;stroke:var(--sky);fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+
+/* Q-CARDS */
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.qcard{border-radius:7px;padding:10px;border:1px solid var(--border);}
+.qcard-title{font-size:10.5px;font-weight:700;margin-bottom:3px;}
+.qcard-items{font-size:11px;color:var(--text-2);line-height:1.5;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#C8D0DC;border-radius:4px;}
+
+/* TABS WITHIN UPLOAD PAGE */
+.upload-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.upload-tab{padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;}
+.upload-tab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.upload-tab-pane{display:none;}
+.upload-tab-pane.active{display:block;}
+
+/* PLATFORM COLOR DOTS */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-row">
+      <div class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+      <div><div class="sb-name">Kementerian Pariwisata</div><div class="sb-sub">Analitik Digital</div></div>
+    </div>
+    <span class="sb-badge">Universitas Airlangga</span>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-label">Data</div>
+    <div class="sb-item active" onclick="nav('upload')">
+      <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+      Upload Data
+    </div>
+    <div class="sb-label">Analisis</div>
+    <div class="sb-item" onclick="nav('overview')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Overview
+    </div>
+    <div class="sb-item" onclick="nav('platform')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Platform
+    </div>
+    <div class="sb-item" onclick="nav('konten')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Konten
+    </div>
+    <div class="sb-item" onclick="nav('investasi')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Investasi LAKIN
+    </div>
+    <div class="sb-item" onclick="nav('rekomendasi')">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Rekomendasi
+    </div>
+  </nav>
+  <div class="sb-footer">Universitas Airlangga x Kementerian Pariwisata<br><span id="sb-record-count">Belum ada data</span></div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-breadcrumb">
+      Dashboard <span>›</span> <strong id="tb-title">Upload Data</strong>
+    </div>
+    <div class="tb-right">
+      <span class="tb-count" id="tb-count">0 records</span>
+      <div class="tb-avatar">KM</div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: UPLOAD ===== -->
+  <div id="page-upload" class="page active">
+    <div class="page-inner">
+      <div class="notice">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Upload file CSV atau Excel (.xlsx) per platform. Nama kolom akan dimapping otomatis sesuai skema notebook. Setelah semua file diupload, klik Jalankan Analisis.
+      </div>
+
+      <div class="upload-tabs">
+        <div class="upload-tab active" onclick="switchUploadTab('files')">Upload File</div>
+        <div class="upload-tab" onclick="switchUploadTab('schema')">Referensi Skema Kolom</div>
+      </div>
+
+      <div id="utab-files" class="upload-tab-pane active">
+        <div class="upload-grid">
+          <!-- Instagram -->
+          <div class="ucard" id="ucard-instagram" ondragover="dragOver(event,'instagram')" ondragleave="dragLeave(event,'instagram')" ondrop="dropFile(event,'instagram')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'instagram')">
+            <span class="uicon" style="color:#E1306C;">IG</span>
+            <div class="uplatform">Instagram</div>
+            <div class="ustatus" id="ustatus-instagram">Klik atau drag file CSV/XLSX</div>
+            <div class="urows" id="urows-instagram"></div>
+          </div>
+          <!-- LinkedIn -->
+          <div class="ucard" id="ucard-linkedin" ondragover="dragOver(event,'linkedin')" ondragleave="dragLeave(event,'linkedin')" ondrop="dropFile(event,'linkedin')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'linkedin')">
+            <span class="uicon" style="color:#0A66C2;">LI</span>
+            <div class="uplatform">LinkedIn</div>
+            <div class="ustatus" id="ustatus-linkedin">Klik atau drag file CSV/XLSX</div>
+            <div class="urows" id="urows-linkedin"></div>
+          </div>
+          <!-- TikTok -->
+          <div class="ucard" id="ucard-tiktok" ondragover="dragOver(event,'tiktok')" ondragleave="dragLeave(event,'tiktok')" ondrop="dropFile(event,'tiktok')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'tiktok')">
+            <span class="uicon" style="color:#000;">TT</span>
+            <div class="uplatform">TikTok</div>
+            <div class="ustatus" id="ustatus-tiktok">Klik atau drag file CSV/XLSX</div>
+            <div class="urows" id="urows-tiktok"></div>
+          </div>
+          <!-- Twitter -->
+          <div class="ucard" id="ucard-twitter" ondragover="dragOver(event,'twitter')" ondragleave="dragLeave(event,'twitter')" ondrop="dropFile(event,'twitter')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'twitter')">
+            <span class="uicon" style="color:#1DA1F2;">TW</span>
+            <div class="uplatform">Twitter / X</div>
+            <div class="ustatus" id="ustatus-twitter">Klik atau drag file CSV/XLSX</div>
+            <div class="urows" id="urows-twitter"></div>
+          </div>
+          <!-- YouTube -->
+          <div class="ucard" id="ucard-youtube" ondragover="dragOver(event,'youtube')" ondragleave="dragLeave(event,'youtube')" ondrop="dropFile(event,'youtube')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'youtube')">
+            <span class="uicon" style="color:#FF0000;">YT</span>
+            <div class="uplatform">YouTube</div>
+            <div class="ustatus" id="ustatus-youtube">Klik atau drag file CSV/XLSX</div>
+            <div class="urows" id="urows-youtube"></div>
+          </div>
+          <!-- Google Trends -->
+          <div class="ucard" id="ucard-trends" ondragover="dragOver(event,'trends')" ondragleave="dragLeave(event,'trends')" ondrop="dropFile(event,'trends')">
+            <input type="file" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'trends')">
+            <span class="uicon" style="color:#4285F4;">GT</span>
+            <div class="uplatform">Google Trends (opsional)</div>
+            <div class="ustatus" id="ustatus-trends">geoMap.csv dari Google Trends</div>
+            <div class="urows" id="urows-trends"></div>
+          </div>
+        </div>
+
+        <!-- Per-platform column mapper -->
+        <div id="mapper-container"></div>
+
+        <div style="margin-top:16px;display:flex;align-items:center;gap:12px;">
+          <button class="analyze-btn" id="btn-analyze" onclick="runAnalysis()" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Jalankan Analisis
+          </button>
+          <span id="analyze-status" style="font-size:12px;color:var(--text-2);"></span>
+        </div>
+      </div>
+
+      <div id="utab-schema" class="upload-tab-pane">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">Instagram</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th><th>Wajib</th></tr></thead><tbody>
+              <tr><td>caption</td><td>text</td><td>Ya</td></tr>
+              <tr><td>likesCount</td><td>likes</td><td>Ya</td></tr>
+              <tr><td>commentsCount</td><td>comments</td><td></td></tr>
+              <tr><td>timestamp</td><td>timestamp</td><td></td></tr>
+              <tr><td>ownerUsername</td><td>author</td><td></td></tr>
+              <tr><td>hashtags/0, hashtags/1, ...</td><td>hashtags (list)</td><td></td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">LinkedIn</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th><th>Wajib</th></tr></thead><tbody>
+              <tr><td>post_text</td><td>text</td><td>Ya</td></tr>
+              <tr><td>likes</td><td>likes</td><td>Ya</td></tr>
+              <tr><td>comments</td><td>comments</td><td></td></tr>
+              <tr><td>reposts</td><td>shares</td><td></td></tr>
+              <tr><td>author</td><td>author</td><td></td></tr>
+              <tr><td>country</td><td>country</td><td></td></tr>
+              <tr><td>investment_signal</td><td>investment_signal</td><td></td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">TikTok</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th><th>Wajib</th></tr></thead><tbody>
+              <tr><td>caption</td><td>text</td><td>Ya</td></tr>
+              <tr><td>like</td><td>likes</td><td>Ya</td></tr>
+              <tr><td>comment</td><td>comments</td><td></td></tr>
+              <tr><td>save</td><td>saves</td><td></td></tr>
+              <tr><td>shere (typo)</td><td>shares</td><td></td></tr>
+              <tr><td>timestamp</td><td>timestamp</td><td></td></tr>
+              <tr><td>hastags_list</td><td>hashtags</td><td></td></tr>
+              <tr><td>Duration</td><td>duration_sec</td><td></td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">Twitter / X</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th><th>Wajib</th></tr></thead><tbody>
+              <tr><td>full_text</td><td>text</td><td>Ya</td></tr>
+              <tr><td>favorite_count</td><td>likes</td><td>Ya</td></tr>
+              <tr><td>reply_count</td><td>comments</td><td></td></tr>
+              <tr><td>retweet_count</td><td>shares</td><td></td></tr>
+              <tr><td>created_at</td><td>timestamp</td><td></td></tr>
+              <tr><td>location</td><td>country</td><td></td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">YouTube</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th><th>Wajib</th></tr></thead><tbody>
+              <tr><td>title</td><td>text</td><td>Ya</td></tr>
+              <tr><td>channel</td><td>author</td><td></td></tr>
+              <tr><td>views</td><td>views</td><td>Ya</td></tr>
+              <tr><td>likes</td><td>likes</td><td>Ya</td></tr>
+              <tr><td>comments</td><td>comments</td><td></td></tr>
+              <tr><td>published_at</td><td>timestamp</td><td></td></tr>
+              <tr><td>duration_seconds</td><td>duration_sec</td><td></td></tr>
+              <tr><td>destination</td><td>destination</td><td></td></tr>
+              <tr><td>investment_topic</td><td>investment_topic</td><td></td></tr>
+              <tr><td>description</td><td>description (hashtag source)</td><td></td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:10px;">Google Trends (geoMap.csv)</div>
+            <table class="tbl"><thead><tr><th>Kolom di File</th><th>Dipetakan ke</th></tr></thead><tbody>
+              <tr><td>country / Negara</td><td>country</td></tr>
+              <tr><td>kolom 2 (value)</td><td>q_id_invest_tourism</td></tr>
+              <tr><td>kolom 3</td><td>q_bali_invest</td></tr>
+              <tr><td>kolom 4</td><td>q_invest_in_id</td></tr>
+            </tbody></table>
+            <div class="ibox"><strong>Format Google Trends</strong>Export geoMap.csv dari Google Trends dengan 3 query: "indonesia investment tourism", "bali investment tourism", "invest in indonesia tourism".</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: OVERVIEW ===== -->
+  <div id="page-overview" class="page">
+    <div class="page-inner">
+      <div class="metrics" id="ov-metrics">
+        <div class="mcard" style="--accent:var(--navy);--icon-bg:var(--sky-bg);--icon-clr:var(--sky);">
+          <div class="mcard-top"><div class="mcard-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mbadge neu" id="ov-m1-badge">-</span></div>
+          <div class="mval" id="ov-m1-val">-</div><div class="mlbl">Total Records</div>
+        </div>
+        <div class="mcard" style="--accent:var(--gold);--icon-bg:var(--gold-pale);--icon-clr:var(--gold);">
+          <div class="mcard-top"><div class="mcard-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="mbadge neu" id="ov-m2-badge">-</span></div>
+          <div class="mval" id="ov-m2-val">-</div><div class="mlbl">Konten Relevan Investasi</div>
+        </div>
+        <div class="mcard" style="--accent:var(--green);--icon-bg:var(--green-bg);--icon-clr:var(--green);">
+          <div class="mcard-top"><div class="mcard-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="mbadge neu" id="ov-m3-badge">-</span></div>
+          <div class="mval" id="ov-m3-val">-</div><div class="mlbl">Avg Inv. Keyword Score</div>
+        </div>
+        <div class="mcard" style="--accent:var(--sky);--icon-bg:var(--sky-bg);--icon-clr:var(--sky);">
+          <div class="mcard-top"><div class="mcard-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div><span class="mbadge neu" id="ov-m4-badge">-</span></div>
+          <div class="mval" id="ov-m4-val">-</div><div class="mlbl">Platform Aktif</div>
+        </div>
+      </div>
+      <div class="g2w">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Distribusi Konten per Platform</span></div><div class="chart-wrap"><canvas id="ch-platform-bar" height="200"></canvas></div></div>
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Proporsi Konten Investasi</span></div><div class="chart-wrap"><canvas id="ch-inv-pie" height="200"></canvas></div>
+          <div id="ov-inv-insight" class="ibox" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Post per Destinasi (top keyword match)</span></div><div class="chart-wrap"><canvas id="ch-dest-bar" height="220"></canvas></div></div>
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Median Total Interaction per Platform</span></div><div class="chart-wrap"><canvas id="ch-engagement" height="220"></canvas></div>
+          <div id="ov-kruskal" class="ibox" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="page-side">
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Platform Ranking</span></div>
+        <div class="scard-body" id="ov-platform-rank"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Investment Effectiveness Score</span></div>
+        <div class="scard-body" id="ov-ies"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: PLATFORM ===== -->
+  <div id="page-platform" class="page">
+    <div class="page-inner">
+      <div class="g2">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">% Konten Relevan Investasi per Platform</span></div><div class="chart-wrap"><canvas id="ch-inv-ratio" height="200"></canvas></div></div>
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Rata-rata Jumlah Hashtag per Platform</span></div><div class="chart-wrap"><canvas id="ch-hashtag-avg" height="200"></canvas></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Distribusi Panjang Teks (rata-rata karakter)</span></div><div class="chart-wrap"><canvas id="ch-textlen" height="200"></canvas></div></div>
+        <div class="card">
+          <div class="sec-hdr"><span class="sec-title">Top Hashtag per Platform</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;">Instagram</div>
+              <div id="ht-instagram"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;">TikTok</div>
+              <div id="ht-tiktok"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;">Twitter / X</div>
+              <div id="ht-twitter"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;">YouTube</div>
+              <div id="ht-youtube"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-side">
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Statistik per Platform</span></div>
+        <div class="scard-body" id="plt-stats"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Bahasa Konten (heuristik)</span></div>
+        <div class="scard-body" id="plt-lang"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: KONTEN ===== -->
+  <div id="page-konten" class="page">
+    <div class="page-inner">
+      <div class="g2">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Engagement vs Panjang Konten (median per bin)</span></div><div class="chart-wrap"><canvas id="ch-eng-len" height="210"></canvas></div></div>
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Engagement vs Jumlah Hashtag (median per bin)</span></div><div class="chart-wrap"><canvas id="ch-eng-htag" height="210"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="sec-hdr"><span class="sec-title">Framing Konten Investasi per Platform</span></div>
+        <div class="chart-wrap"><canvas id="ch-frame" height="180"></canvas></div>
+        <div id="kont-frame-insight" class="ibox" style="display:none;"></div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="sec-hdr"><span class="sec-title">Investment Frame Definitions (dari notebook)</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:12px;">
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>ROI / Return</strong><br><span style="color:var(--text-2);">roi, return, profit, keuntungan, yield, dividen, pendapatan</span></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>Infrastruktur</strong><br><span style="color:var(--text-2);">infrastruktur, jalan, bandara, pelabuhan, fasilitas</span></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>Regulasi / Kemudahan</strong><br><span style="color:var(--text-2);">izin, perizinan, regulasi, kemudahan, kebijakan, oss</span></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>Destinasi / Lokasi</strong><br><span style="color:var(--text-2);">bali, lombok, labuan, ntt, sumba, raja ampat</span></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>Sustainability</strong><br><span style="color:var(--text-2);">sustainable, berkelanjutan, hijau, green, esg</span></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px;"><strong>Kemitraan</strong><br><span style="color:var(--text-2);">kerjasama, partnership, kolaborasi, b2b, mou</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="page-side">
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Inv. Keyword Score per Platform</span></div>
+        <div class="scard-body" id="kont-kw-score"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Top Konten per Platform</span></div>
+        <div class="scard-body" id="kont-toprows"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: INVESTASI ===== -->
+  <div id="page-investasi" class="page">
+    <div class="page-inner">
+      <div class="g2">
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Capaian Investasi per Destinasi (%) — LAKIN 2025</span></div><div class="chart-wrap"><canvas id="ch-lakin" height="280"></canvas></div></div>
+        <div class="card"><div class="sec-hdr"><span class="sec-title">Investment Gap Matrix (Capaian LAKIN vs Volume Konten)</span></div><div class="chart-wrap"><canvas id="ch-gap" height="280"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="sec-hdr"><span class="sec-title">Tabel Lengkap LAKIN 2025 + Volume Konten Digital</span></div>
+        <table class="tbl">
+          <thead><tr><th>Destinasi</th><th>Realisasi (Juta Rp)</th><th>Capaian (%)</th><th>Status LAKIN</th><th>Post Investasi</th><th>Platform Diversity</th><th>Kuadran</th></tr></thead>
+          <tbody id="inv-table"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="page-side">
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Investment Gap Matrix</span></div>
+        <div class="scard-body">
+          <div style="font-size:11.5px;color:var(--text-2);margin-bottom:8px;">Klasifikasi berdasarkan capaian LAKIN vs volume konten digital investasi</div>
+          <div class="qgrid">
+            <div class="qcard" style="background:var(--green-bg);border-color:rgba(30,107,74,.2);">
+              <div class="qcard-title" style="color:var(--green);">Q1: Mature + Promoted</div>
+              <div class="qcard-items" id="q1-items">-</div>
+            </div>
+            <div class="qcard" style="background:var(--sky-bg);border-color:rgba(46,110,166,.2);">
+              <div class="qcard-title" style="color:var(--sky);">Q2: Mature, Under-Promoted</div>
+              <div class="qcard-items" id="q2-items">-</div>
+            </div>
+            <div class="qcard" style="background:#FFF7ED;border-color:rgba(212,127,40,.2);">
+              <div class="qcard-title" style="color:var(--amber);">Q3: Over-Promoted / Low Invest</div>
+              <div class="qcard-items" id="q3-items">-</div>
+            </div>
+            <div class="qcard" style="background:#FCEAE8;border-color:rgba(192,57,43,.2);">
+              <div class="qcard-title" style="color:var(--red);">Q4: Hidden Gem / Needs Push</div>
+              <div class="qcard-items" id="q4-items">-</div>
+            </div>
+          </div>
+          <div class="ibox" id="inv-gap-insight" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Destinasi Terbanyak Dibahas</span></div>
+        <div class="scard-body" id="inv-dest-rank"><div class="empty"><p>Belum ada data</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: REKOMENDASI ===== -->
+  <div id="page-rekomendasi" class="page">
+    <div class="page-inner">
+      <div id="reko-container">
+        <div class="empty" style="padding:60px 20px;">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <p>Jalankan analisis terlebih dahulu untuk melihat rekomendasi berbasis data.</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-side">
+      <div class="scard">
+        <div class="scard-hdr"><span class="scard-title">Data Sources</span></div>
+        <div class="scard-body" id="reko-sources"><div class="empty"><p>-</p></div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// =====================================================================
+// CONSTANTS (dari notebook)
+// =====================================================================
+const LAKIN_DATA = [
+  {d:"Bali",                         t:11588448.83, r:16052380.42, c:138.52},
+  {d:"Greater Jakarta",              t:16240176.28, r:23744721.75, c:146.21},
+  {d:"Kepulauan Riau",               t:1538200.00,  r:2011716.61,  c:130.78},
+  {d:"Borobudur-Yogyakarta-Prambanan",t:806396.94,  r:1363228.87,  c:169.08},
+  {d:"Labuan Bajo",                  t:360355.54,   r:1741446.85,  c:483.20},
+  {d:"Danau Toba",                   t:178342.82,   r:43180.55,    c:24.21},
+  {d:"Lombok-Gili Tramena",          t:3597018.22,  r:4324513.54,  c:120.24},
+  {d:"Manado-Likupang",              t:263802.18,   r:442682.56,   c:167.81},
+  {d:"Bangka Belitung",              t:85452.47,    r:113770.57,   c:133.13},
+  {d:"Raja Ampat",                   t:29726.08,    r:81815.43,    c:275.26},
+  {d:"Bromo-Tengger-Semeru",         t:2404953.00,  r:1992084.52,  c:82.87},
+  {d:"Wakatobi",                     t:55733.80,    r:65444.49,    c:117.43},
+  {d:"Morotai",                      t:7431.42,     r:9232.95,     c:124.25},
+];
+
+const LAKIN_STATUS = c =>
+  c >= 150 ? {l:"Sangat Tinggi (>=150%)", cls:"high"}
+  : c >= 100 ? {l:"Tercapai (100-149%)", cls:"ok"}
+  : c >= 75  ? {l:"Hampir Tercapai (75-99%)", cls:"near"}
+  :            {l:"Underperform (<75%)", cls:"low"};
+
+const DESTINASI_KEYWORD_MAP = {
+  "Bali":                          ["bali","kuta","seminyak","ubud","sanur","nusa dua"],
+  "Greater Jakarta":               ["jakarta","bekasi","bogor","tangerang","depok","jabodetabek"],
+  "Kepulauan Riau":                ["batam","bintan","kepri","tanjung pinang","kepulauan riau"],
+  "Borobudur-Yogyakarta-Prambanan":["borobudur","yogyakarta","jogja","prambanan","magelang"],
+  "Labuan Bajo":                   ["labuan bajo","flores","komodo","manggarai","ntt"],
+  "Danau Toba":                    ["danau toba","toba","samosir","batak","sumatera utara"],
+  "Lombok-Gili Tramena":           ["lombok","gili","mataram","sumbawa","ntb"],
+  "Manado-Likupang":               ["manado","likupang","sulawesi utara","bunaken","minahasa"],
+  "Bangka Belitung":               ["bangka","belitung","babel","bangka belitung"],
+  "Raja Ampat":                    ["raja ampat","sorong","papua barat","misool","waigeo"],
+  "Bromo-Tengger-Semeru":          ["bromo","semeru","tengger","malang","probolinggo"],
+  "Wakatobi":                      ["wakatobi","sulawesi tenggara","wangi-wangi","tomia"],
+  "Morotai":                       ["morotai","maluku utara","halmahera"],
+};
+
+const INV_KEYWORDS = [
+  "investasi","investment","investor","roi","return","yield",
+  "modal","capital","profit","revenue","bisnis","business",
+  "properti","property","resort","hotel","villa","infrastruktur",
+  "kerjasama","partnership","funding","ekuitas","dividen"
+];
+
+const ID_KEYWORDS = ["investasi","pariwisata","wisata","indonesia","kawasan","destinasi",
+                     "peluang","pengembangan","kementerian","ekonomi"];
+
+const FRAMES = {
+  "ROI / Return":         ["roi","return","profit","keuntungan","yield","dividen","pendapatan"],
+  "Infrastruktur":        ["infrastruktur","infrastructure","jalan","bandara","pelabuhan","fasilitas"],
+  "Regulasi/Kemudahan":   ["izin","perizinan","regulasi","kemudahan","kebijakan","hilirisasi","oss"],
+  "Destinasi/Lokasi":     ["bali","lombok","labuan","ntt","sumba","raja ampat","mandalika"],
+  "Sustainability":       ["sustainable","berkelanjutan","hijau","green","esg","lingkungan"],
+  "Kemitraan":            ["kerjasama","partnership","kolaborasi","b2b","mou","joint"],
+};
+
+const PCOLORS = {
+  Instagram:"#E1306C", LinkedIn:"#0A66C2",
+  TikTok:"#222222", Twitter:"#1DA1F2", YouTube:"#FF0000"
+};
+
+const TEXT_BINS = [
+  {label:"<150",    min:0,    max:150},
+  {label:"150-500", min:150,  max:500},
+  {label:"500-1000",min:500,  max:1000},
+  {label:"1000-3000",min:1000,max:3000},
+  {label:">3000",   min:3000, max:Infinity},
+];
+
+const HTAG_BINS = [
+  {label:"0",    min:-1, max:0},
+  {label:"1-5",  min:0,  max:5},
+  {label:"6-10", min:5,  max:10},
+  {label:"11-20",min:10, max:20},
+  {label:">20",  min:20, max:Infinity},
+];
+
+// =====================================================================
+// STATE
+// =====================================================================
+const RAW_FILES = {}; // platform -> array of raw rows
+let DF_ALL = [];      // processed master dataframe
+const CHARTS = {};
+
+// =====================================================================
+// NAVIGATION
+// =====================================================================
+const PAGES = ['upload','overview','platform','konten','investasi','rekomendasi'];
+const PAGE_TITLES = {upload:'Upload Data',overview:'Overview',platform:'Platform Analysis',konten:'Strategi Konten',investasi:'Investasi LAKIN',rekomendasi:'Rekomendasi'};
+
+function nav(id) {
+  PAGES.forEach(p => {
+    document.getElementById('page-'+p).classList.toggle('active', p===id);
+  });
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick') === `nav('${id}')`);
+  });
+  document.getElementById('tb-title').textContent = PAGE_TITLES[id] || id;
+}
+
+function switchUploadTab(id) {
+  document.querySelectorAll('.upload-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.upload-tab-pane').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[onclick="switchUploadTab('${id}')"]`).classList.add('active');
+  document.getElementById('utab-'+id).classList.add('active');
+}
+
+// =====================================================================
+// FILE HANDLING
+// =====================================================================
+function dragOver(e, plat) { e.preventDefault(); document.getElementById('ucard-'+plat).classList.add('drag-over'); }
+function dragLeave(e, plat) { document.getElementById('ucard-'+plat).classList.remove('drag-over'); }
+function dropFile(e, plat) {
+  e.preventDefault();
+  dragLeave(e, plat);
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file, plat);
+}
+function handleFile(e, plat) {
+  const file = e.target.files[0];
+  if (file) processFile(file, plat);
+}
+
+function processFile(file, plat) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const card = document.getElementById('ucard-'+plat);
+  const status = document.getElementById('ustatus-'+plat);
+  const rows = document.getElementById('urows-'+plat);
+
+  if (ext === 'csv') {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: res => {
+        if (res.data.length === 0) { showUploadError(plat, 'File kosong'); return; }
+        RAW_FILES[plat] = res.data;
+        showUploadOk(plat, res.data.length, Object.keys(res.data[0]));
+        checkAnalyzeReady();
+      },
+      error: () => showUploadError(plat, 'Gagal parse CSV')
+    });
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    // Use SheetJS via CDN
+    if (typeof XLSX === 'undefined') {
+      showUploadError(plat, 'Library XLSX belum dimuat, gunakan CSV');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, {type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, {defval:''});
+        if (!data.length) { showUploadError(plat,'File kosong'); return; }
+        RAW_FILES[plat] = data;
+        showUploadOk(plat, data.length, Object.keys(data[0]));
+        checkAnalyzeReady();
+      } catch(err) { showUploadError(plat,'Gagal parse XLSX: '+err.message); }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showUploadError(plat, 'Format tidak didukung');
+  }
+}
+
+function showUploadOk(plat, n, cols) {
+  document.getElementById('ucard-'+plat).className = 'ucard loaded';
+  document.getElementById('ustatus-'+plat).textContent = n.toLocaleString('id') + ' baris ditemukan';
+  document.getElementById('ustatus-'+plat).className = 'ustatus ok';
+  document.getElementById('urows-'+plat).textContent = 'Kolom: ' + cols.slice(0,6).join(', ') + (cols.length>6?'...':'');
+}
+
+function showUploadError(plat, msg) {
+  document.getElementById('ucard-'+plat).className = 'ucard error';
+  document.getElementById('ustatus-'+plat).textContent = msg;
+  document.getElementById('ustatus-'+plat).className = 'ustatus err';
+}
+
+function checkAnalyzeReady() {
+  const loaded = Object.keys(RAW_FILES).filter(p => p !== 'trends').length;
+  const btn = document.getElementById('btn-analyze');
+  btn.disabled = loaded === 0;
+  document.getElementById('analyze-status').textContent =
+    loaded > 0 ? loaded + ' platform siap dianalisis' : '';
+}
+
+// =====================================================================
+// COLUMN MAPPING HELPERS (auto-detect)
+// =====================================================================
+const SCHEMA = {
+  instagram: {text:['caption','text','konten','content'],likes:['likescount','likes','like'],comments:['commentscount','comments','comment'],timestamp:['timestamp','date','created_at'],author:['ownerusername','author','username'],shares:[],saves:[],views:[]},
+  linkedin: {
+  text: ['post_text','post text','text','konten','content','caption','message','body'],
+  likes: ['likes','like','engagement_score'],
+  comments: ['comments','comment'],
+  shares: ['reposts','shares','retweet_count'],
+  timestamp: ['post_time_raw','post_time_days','timestamp','date'],
+  author: ['author','username'],
+  country: ['country','location','negara','region'],
+  investment_signal: ['investment_signal','inv_signal','signal','label'],
+  },
+  tiktok:    {text:['caption','text','konten'],likes:['like','likes','likescount'],comments:['comment','comments'],saves:['save','saves'],shares:['shere','share','shares'],timestamp:['timestamp','date','created_at'],hashtags_list:['hastags_list','hashtags_list','hashtags','tags'],duration_sec:['duration','duration_sec','Duration','durasi']},
+  twitter:   {text:['full_text','text','tweet','konten'],likes:['favorite_count','likes','like'],comments:['reply_count','replies','comments'],shares:['retweet_count','shares','retweet'],timestamp:['created_at','timestamp','date'],country:['location','country','lokasi']},
+  youtube:   {text:['title','judul','text'],likes:['likes','like'],comments:['comments','comment'],views:['views','view','tayangan'],timestamp:['published_at','timestamp','date','tanggal'],author:['channel','author','username'],duration_sec:['duration_seconds','duration','duration_sec','durasi_detik'],destination:['destination','destinasi'],investment_topic:['investment_topic','topik'],description:['description','deskripsi']},
+  trends:    {country:['country','negara','geo'],q1:['q_id_invest_tourism','indonesia investment tourism','value_1'],q2:['q_bali_invest','bali investment tourism','value_2'],q3:['q_invest_in_id','invest in indonesia tourism','value_3']},
+};
+
+function autoMap(cols, candidates) {
+  const lower = cols.map(c => c.toLowerCase().replace(/\s+/g,'_'));
+  for (const c of candidates) {
+    const idx = lower.indexOf(c.toLowerCase().replace(/\s+/g,'_'));
+    if (idx >= 0) return cols[idx];
+  }
+  // partial match
+  for (const c of candidates) {
+    const idx = lower.findIndex(l => l.includes(c.toLowerCase()));
+    if (idx >= 0) return cols[idx];
+  }
+  return null;
+}
+
+// =====================================================================
+// DATA PROCESSING (mirrors notebook logic)
+// =====================================================================
+function toNum(v) {
+  if (v === null || v === undefined || v === '') return NaN;
+  const n = parseFloat(String(v).replace(/[,\s]/g,''));
+  return isNaN(n) ? NaN : n;
+}
+
+function invKwScore(text) {
+  if (text === null || text === undefined) return 0;
+  const t = String(text).toLowerCase();
+  return INV_KEYWORDS.reduce((acc, kw) => acc + (t.includes(kw) ? 1 : 0), 0);
+}
+
+function detectLang(text) {
+  if (text === null || text === undefined) return 'unknown';
+  const t = String(text).toLowerCase();
+  const hits = ID_KEYWORDS.filter(kw => t.includes(kw)).length;
+  return hits >= 2 ? 'id' : 'en';
+}
+
+function tagDestinasi(text) {
+  if (text === null || text === undefined) return ['Tidak Teridentifikasi'];
+  const t = String(text).toLowerCase()
+  const matched = [];
+  for (const [dest, kws] of Object.entries(DESTINASI_KEYWORD_MAP)) {
+    if (kws.some(kw => t.includes(kw))) matched.push(dest);
+  }
+  return matched.length ? matched : ['Tidak Teridentifikasi'];
+}
+
+function extractHashtagsFromText(text) {
+  if (text === null || text === undefined) return [];
+  const t = String(text);
+  const m = t.match(/#\w+/g);
+  return m ? m.map(h => h.replace('#','')) : [];
+}
+
+function processInstagram(rows) {
+  const cols = Object.keys(rows[0]);
+  const M = SCHEMA.instagram;
+  return rows.map(r => {
+    const text = r[autoMap(cols,M.text)] || '';
+    const likes = toNum(r[autoMap(cols,M.likes)]);
+    const comments = toNum(r[autoMap(cols,M.comments)]);
+    const ts = r[autoMap(cols,M.timestamp)] || null;
+    const author = r[autoMap(cols,M.author)] || '';
+    // hashtags from hashtags/N columns
+    const htagCols = cols.filter(c => c.toLowerCase().startsWith('hashtag'));
+    const hashtags = htagCols.map(c => r[c]).filter(v => v && String(v).trim());
+    return {platform:'Instagram',author,text,likes,comments,saves:NaN,shares:NaN,views:NaN,timestamp:ts,hashtags,hashtag_count:hashtags.length};
+  });
+}
+
+function processLinkedIn(rows) {
+  const cols = Object.keys(rows[0]);
+  const M = SCHEMA.linkedin;
+
+  return rows.map(r => {
+    const text = r[autoMap(cols, M.text)] || '';
+    const invCol = autoMap(cols, M.investment_signal);
+    const investment_signal = invCol ? r[invCol] : '';
+
+    // Baca kolom boolean tambahan yang ada di file LinkedIn
+    const has_investment_narrative = toNum(r['has_investment_narrative']) || 0;
+    const mentions_infrastructure  = toNum(r['mentions_infrastructure'])  || 0;
+    const mentions_sustainability  = toNum(r['mentions_sustainability'])  || 0;
+    const has_growth_data          = toNum(r['has_growth_data'])          || 0;
+
+    return {
+      platform: 'LinkedIn',
+      author: r[autoMap(cols, M.author)] || '',
+      text,
+      likes:    toNum(r[autoMap(cols, M.likes)]),
+      comments: toNum(r[autoMap(cols, M.comments)]),
+      saves: NaN,
+      shares:   toNum(r[autoMap(cols, M.shares)]),
+      views: NaN,
+      timestamp: r[autoMap(cols, M.timestamp)] || null,
+      hashtags: [], hashtag_count: 0,
+      country: r[autoMap(cols, M.country)] || '',
+      investment_signal,
+      has_investment_narrative,
+      mentions_infrastructure,
+      mentions_sustainability,
+      has_growth_data,
+    };
+  });
+}
+
+function processTikTok(rows) {
+  const cols = Object.keys(rows[0]);
+  const M = SCHEMA.tiktok;
+  return rows.map(r => {
+    const text = r[autoMap(cols,M.text)] || '';
+    const rawHtags = r[autoMap(cols,M.hashtags_list)] || '';
+    const hashtags = String(rawHtags).match(/#\w+/g)?.map(h=>h.replace('#','')) || [];
+    return {platform:'TikTok',author:'',text,
+      likes:toNum(r[autoMap(cols,M.likes)]),comments:toNum(r[autoMap(cols,M.comments)]),
+      saves:toNum(r[autoMap(cols,M.saves)]),shares:toNum(r[autoMap(cols,M.shares)]),views:NaN,
+      timestamp:r[autoMap(cols,M.timestamp)]||null,hashtags,hashtag_count:hashtags.length,
+      duration_sec:toNum(r[autoMap(cols,M.duration_sec)])};
+  });
+}
+
+function processTwitter(rows) {
+  const cols = Object.keys(rows[0]);
+  const M = SCHEMA.twitter;
+  return rows.map(r => {
+    const text = r[autoMap(cols,M.text)] || '';
+    const hashtags = extractHashtagsFromText(text);
+    return {platform:'Twitter',author:'',text,
+      likes:toNum(r[autoMap(cols,M.likes)]),comments:toNum(r[autoMap(cols,M.comments)]),
+      saves:NaN,shares:toNum(r[autoMap(cols,M.shares)]),views:NaN,
+      timestamp:r[autoMap(cols,M.timestamp)]||null,hashtags,hashtag_count:hashtags.length,
+      country:r[autoMap(cols,M.country)]||''};
+  });
+}
+
+function processYouTube(rows) {
+  const cols = Object.keys(rows[0]);
+  const M = SCHEMA.youtube;
+  return rows.map(r => {
+    const desc = r[autoMap(cols,M.description)] || '';
+    const text = r[autoMap(cols,M.text)] || '';
+    const hashtags = extractHashtagsFromText(desc);
+    return {platform:'YouTube',author:r[autoMap(cols,M.author)]||'',text,
+      likes:toNum(r[autoMap(cols,M.likes)]),comments:toNum(r[autoMap(cols,M.comments)]),
+      saves:NaN,shares:NaN,views:toNum(r[autoMap(cols,M.views)]),
+      timestamp:r[autoMap(cols,M.timestamp)]||null,hashtags,hashtag_count:hashtags.length,
+      duration_sec:toNum(r[autoMap(cols,M.duration_sec)]),
+      destination:r[autoMap(cols,M.destination)]||'',
+      investment_topic:r[autoMap(cols,M.investment_topic)]||''};
+  });
+}
+
+function featureEngineer(rows) {
+  return rows.map(r => {
+    const likes = isNaN(r.likes) ? 0 : r.likes;
+    const comments = isNaN(r.comments) ? 0 : r.comments;
+    const saves = isNaN(r.saves) ? 0 : r.saves;
+    const shares = isNaN(r.shares) ? 0 : r.shares;
+    const total_interaction = likes + comments + saves + shares;
+    const text = r.text || '';
+    const text_length = text.length;
+    const word_count = text.split(/\s+/).filter(Boolean).length;
+    const inv_kw_score = invKwScore(text);
+    const signalVal = String(r.investment_signal || '').toLowerCase().trim();
+    const signal_positive = ['high','medium','yes','true','1','positif','ya'].includes(signalVal);
+    const linkedin_tagged = (r.has_investment_narrative === 1) || signal_positive;
+    const is_investment_content = (inv_kw_score >= 2 || linkedin_tagged) ? 1 : 0;
+    const lang = detectLang(text);
+    const destinasi_tagged = tagDestinasi(text);
+
+    // frames
+    const frames = {};
+    for (const [name, kws] of Object.entries(FRAMES)) {
+      const key = 'frame_' + name.split('/')[0].trim().toLowerCase().replace(/\s+/g,'_');
+      frames[key] = kws.some(kw => text.toLowerCase().includes(kw)) ? 1 : 0;
+    }
+
+    return {...r, total_interaction, text_length, word_count, inv_kw_score, is_investment_content, lang, destinasi_tagged, ...frames};
+  });
+}
+
+// =====================================================================
+// STATISTICAL HELPERS
+// =====================================================================
+function median(arr) {
+  const a = arr.filter(v => !isNaN(v) && isFinite(v)).sort((a,b)=>a-b);
+  if (!a.length) return 0;
+  const m = Math.floor(a.length/2);
+  return a.length%2 ? a[m] : (a[m-1]+a[m])/2;
+}
+
+function mean(arr) {
+  const a = arr.filter(v => !isNaN(v) && isFinite(v));
+  return a.length ? a.reduce((s,v)=>s+v,0)/a.length : 0;
+}
+
+function normalize01(arr) {
+  const mn = Math.min(...arr), mx = Math.max(...arr);
+  if (mx===mn) return arr.map(()=>0);
+  return arr.map(v=>(v-mn)/(mx-mn));
+}
+
+function groupBy(arr, key) {
+  return arr.reduce((acc, row) => {
+    const k = row[key];
+    if (!acc[k]) acc[k] = [];
+    acc[k].push(row);
+    return acc;
+  }, {});
+}
+
+function topN(countObj, n=10) {
+  return Object.entries(countObj).sort((a,b)=>b[1]-a[1]).slice(0,n);
+}
+
+function countValues(arr) {
+  return arr.reduce((acc, v) => { acc[v]=(acc[v]||0)+1; return acc; }, {});
+}
+
+// =====================================================================
+// CHART HELPERS
+// =====================================================================
+function destroyChart(id) { if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; } }
+
+function mkBar(id, labels, datasets, opts={}) {
+  destroyChart(id);
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  CHARTS[id] = new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display: datasets.length>1, labels:{font:{size:11},padding:10}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#EEF1F5'},ticks:{font:{size:10}}}}, ...opts}
+  });
+}
+
+function mkHBar(id, labels, data, colors, opts={}) {
+  destroyChart(id);
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  CHARTS[id] = new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{data, backgroundColor:colors, borderRadius:4}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#EEF1F5'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}, ...opts}
+  });
+}
+
+function mkDoughnut(id, labels, data, colors) {
+  destroyChart(id);
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  CHARTS[id] = new Chart(ctx, {
+    type:'doughnut',
+    data:{labels, datasets:[{data, backgroundColor:colors, borderWidth:0}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{legend:{position:'bottom', labels:{font:{size:11},padding:12}}}}
+  });
+}
+
+function mkScatter(id, datasets, opts={}) {
+  destroyChart(id);
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  CHARTS[id] = new Chart(ctx, {
+    type:'scatter',
+    data:{datasets},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{size:10}}},
+        tooltip:{callbacks:{label:p=>`${p.raw.label}: (${p.raw.x.toFixed(0)}, ${p.raw.y.toFixed(1)}%)`}}},
+      scales:{x:{title:{display:true,text:'Volume Konten Investasi',font:{size:10}},grid:{color:'#EEF1F5'},ticks:{font:{size:9}}},
+              y:{title:{display:true,text:'Capaian LAKIN (%)',font:{size:10}},grid:{color:'#EEF1F5'},ticks:{font:{size:9}}}}, ...opts}
+  });
+}
+
+// =====================================================================
+// ANALYSIS
+// =====================================================================
+function runAnalysis() {
+  if (!Object.keys(RAW_FILES).filter(p=>p!=='trends').length) return;
+
+  const btn = document.getElementById('btn-analyze');
+  btn.disabled = true;
+  btn.textContent = 'Memproses...';
+
+  setTimeout(() => {
+    try {
+      // 1. Process each platform
+      const parts = [];
+      if (RAW_FILES.instagram) parts.push(...processInstagram(RAW_FILES.instagram));
+      if (RAW_FILES.linkedin)  parts.push(...processLinkedIn(RAW_FILES.linkedin));
+      if (RAW_FILES.tiktok)    parts.push(...processTikTok(RAW_FILES.tiktok));
+      if (RAW_FILES.twitter)   parts.push(...processTwitter(RAW_FILES.twitter));
+      if (RAW_FILES.youtube)   parts.push(...processYouTube(RAW_FILES.youtube));
+
+      // 2. Feature engineering
+      DF_ALL = featureEngineer(parts);
+
+      // 3. Update UI
+      updateCountBadge();
+      renderOverview();
+      renderPlatform();
+      renderKonten();
+      renderInvestasi();
+      renderRekomendasi();
+
+      btn.disabled = false;
+      btn.textContent = 'Jalankan Analisis';
+      document.getElementById('analyze-status').textContent = DF_ALL.length.toLocaleString('id') + ' records diproses';
+
+      nav('overview');
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = 'Jalankan Analisis';
+      document.getElementById('analyze-status').textContent = 'Error: ' + e.message;
+      console.error(e);
+    }
+  }, 50);
+}
+
+function updateCountBadge() {
+  const n = DF_ALL.length;
+  document.getElementById('tb-count').textContent = n.toLocaleString('id') + ' records';
+  document.getElementById('sb-record-count').textContent = n.toLocaleString('id') + ' records dimuat';
+}
+
+// =====================================================================
+// OVERVIEW
+// =====================================================================
+function renderOverview() {
+  const total = DF_ALL.length;
+  const invRows = DF_ALL.filter(r=>r.is_investment_content===1);
+  const invN = invRows.length;
+  const invPct = total ? (invN/total*100).toFixed(1) : 0;
+  const avgKw = mean(DF_ALL.map(r=>r.inv_kw_score)).toFixed(2);
+  const platforms = [...new Set(DF_ALL.map(r=>r.platform))];
+
+  // Metrics
+  el('ov-m1-val').textContent = total.toLocaleString('id');
+  el('ov-m1-badge').textContent = platforms.length + ' platform';
+  el('ov-m2-val').textContent = invN.toLocaleString('id');
+  el('ov-m2-badge').textContent = invPct + '%';
+  el('ov-m2-badge').className = 'mbadge ' + (invPct>15?'up':'neu');
+  el('ov-m3-val').textContent = avgKw;
+  el('ov-m4-val').textContent = platforms.length;
+  el('ov-m4-badge').textContent = 'aktif';
+
+  // Platform bar
+  const platCounts = countValues(DF_ALL.map(r=>r.platform));
+  const platOrder = Object.entries(platCounts).sort((a,b)=>b[1]-a[1]);
+  mkBar('ch-platform-bar',
+    platOrder.map(([p])=>p),
+    [{data:platOrder.map(([,n])=>n), backgroundColor:platOrder.map(([p])=>PCOLORS[p]||'#888'), borderRadius:5, label:'Jumlah Konten'}]
+  );
+
+  // Inv pie
+  mkDoughnut('ch-inv-pie',
+    [`Konten Investasi (${invN})`,`Konten Lainnya (${total-invN})`],
+    [invN, total-invN],
+    ['#1B3A5C','#E4E8EF']
+  );
+  const insightEl = el('ov-inv-insight');
+  insightEl.style.display = 'block';
+  insightEl.innerHTML = `<strong>Proporsi Konten Investasi</strong>Dari ${total.toLocaleString('id')} konten, hanya ${invPct}% yang relevan investasi (inv_kw_score >= 2). ${invPct<20?'Ruang optimasi konten masih sangat luas.':'Proporsi konten investasi sudah cukup signifikan.'}`;
+
+  // Destinasi bar
+  const destCount = {};
+  DF_ALL.forEach(r=>{
+    (r.destinasi_tagged||[]).forEach(d=>{
+      if (d!=='Tidak Teridentifikasi') destCount[d]=(destCount[d]||0)+1;
+    });
+  });
+  const destOrder = Object.entries(destCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  mkHBar('ch-dest-bar',
+    destOrder.map(([d])=>d), destOrder.map(([,n])=>n),
+    destOrder.map(()=>'rgba(27,58,92,0.75)')
+  );
+
+  // Engagement per platform (median total_interaction)
+  const engByPlat = {};
+  platforms.forEach(p => {
+    const vals = DF_ALL.filter(r=>r.platform===p).map(r=>r.total_interaction);
+    engByPlat[p] = median(vals);
+  });
+  const engOrder = Object.entries(engByPlat).sort((a,b)=>b[1]-a[1]);
+  mkHBar('ch-engagement',
+    engOrder.map(([p])=>p), engOrder.map(([,v])=>v),
+    engOrder.map(([p])=>PCOLORS[p]||'#888')
+  );
+
+  // Kruskal-Wallis insight (simplified indicator)
+  el('ov-kruskal').style.display = 'block';
+  el('ov-kruskal').innerHTML = `<strong>Uji Kruskal-Wallis (perbandingan engagement)</strong>Perbedaan median engagement antar platform: ${engOrder.map(([p,v])=>`${p}=${v.toFixed(0)}`).join(', ')}. Platform dengan median engagement tertinggi adalah <strong>${engOrder[0]?.[0]||'-'}</strong>.`;
+
+  // Platform ranking side
+  el('ov-platform-rank').innerHTML = platOrder.map(([p,n],i)=>`
+    <div class="srow">
+      <div class="savatar" style="background:${PCOLORS[p]||'#888'};">${p.slice(0,2).toUpperCase()}</div>
+      <div class="sinfo"><div class="sname">${p}</div><div class="sdesc">${n.toLocaleString('id')} konten</div></div>
+      <div class="smeta" style="font-weight:700;">#${i+1}</div>
+    </div>`).join('');
+
+  // Investment effectiveness score (formula dari notebook)
+  // dims: n_posts, median_engagement, pct_relevant, avg_inv_kw
+  // weights: 0.15, 0.30, 0.25, 0.20 (tanpa sentimen - tidak ada model NLP di browser)
+  const pStats = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p,
+      n_posts:rows.length,
+      med_eng:median(rows.map(r=>r.total_interaction)),
+      pct_rel:mean(rows.map(r=>r.is_investment_content)),
+      avg_inv:mean(rows.map(r=>r.inv_kw_score))};
+  });
+  const n_n=normalize01(pStats.map(s=>s.n_posts));
+  const e_n=normalize01(pStats.map(s=>s.med_eng));
+  const r_n=normalize01(pStats.map(s=>s.pct_rel));
+  const k_n=normalize01(pStats.map(s=>s.avg_inv));
+  const ies = pStats.map((s,i)=>({...s, ies: n_n[i]*0.15 + e_n[i]*0.30 + r_n[i]*0.25 + k_n[i]*0.30}));
+  ies.sort((a,b)=>b.ies-a.ies);
+
+  el('ov-ies').innerHTML = ies.map((s,i)=>`
+    <div class="pbar-wrap">
+      <div class="pbar-lbl"><span><span class="dot" style="background:${PCOLORS[s.p]||'#888'};"></span>${s.p}</span><span>${(s.ies*100).toFixed(1)}</span></div>
+      <div class="pbar"><div class="pfill" style="width:${s.ies*100}%;background:${PCOLORS[s.p]||'#888'};"></div></div>
+    </div>`).join('');
+}
+
+// =====================================================================
+// PLATFORM
+// =====================================================================
+function renderPlatform() {
+  const platforms = [...new Set(DF_ALL.map(r=>r.platform))];
+
+  // % konten investasi per platform
+  const invRatio = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p, pct: rows.length ? rows.filter(r=>r.is_investment_content).length/rows.length*100 : 0};
+  }).sort((a,b)=>b.pct-a.pct);
+  mkBar('ch-inv-ratio',
+    invRatio.map(x=>x.p),
+    [{data:invRatio.map(x=>x.pct), backgroundColor:invRatio.map(x=>PCOLORS[x.p]||'#888'), borderRadius:5, label:'% Konten Investasi'}],
+    {scales:{y:{max:100,ticks:{callback:v=>v+'%',font:{size:10}}}}}
+  );
+
+  // Avg hashtag per platform
+  const htAvg = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p, avg: mean(rows.map(r=>r.hashtag_count))};
+  }).sort((a,b)=>b.avg-a.avg);
+  mkHBar('ch-hashtag-avg',
+    htAvg.map(x=>x.p), htAvg.map(x=>x.avg),
+    htAvg.map(x=>PCOLORS[x.p]||'#888')
+  );
+
+  // Avg text length per platform
+  const tlAvg = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p, avg: mean(rows.map(r=>r.text_length))};
+  }).sort((a,b)=>b.avg-a.avg);
+  mkBar('ch-textlen',
+    tlAvg.map(x=>x.p),
+    [{data:tlAvg.map(x=>x.avg), backgroundColor:tlAvg.map(x=>PCOLORS[x.p]||'#888'), borderRadius:5, label:'Avg Panjang Teks (karakter)'}]
+  );
+
+  // Top hashtags per platform
+  ['Instagram','TikTok','Twitter','YouTube'].forEach(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    const allTags = rows.flatMap(r=>r.hashtags||[]).map(h=>('#'+h).toLowerCase());
+    const counts = countValues(allTags);
+    const top = topN(counts, 8);
+    const domId = 'ht-'+p.toLowerCase();
+    const domEl = document.getElementById(domId);
+    if (!domEl) return;
+    if (!top.length) { domEl.innerHTML = '<div style="font-size:11px;color:var(--text-3);">Tidak ada hashtag</div>'; return; }
+    domEl.innerHTML = top.map(([t,c])=>`<div class="htag-row"><span class="htag-name" style="color:${PCOLORS[p]||'#888'};">${t}</span><span class="htag-count">${c}</span></div>`).join('');
+  });
+
+  // Stats side panel
+  const pStats = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p, n:rows.length, med:median(rows.map(r=>r.total_interaction)),
+      invN:rows.filter(r=>r.is_investment_content).length,
+      langs:countValues(rows.map(r=>r.lang))};
+  });
+  el('plt-stats').innerHTML = pStats.map(s=>`
+    <div class="srow">
+      <div class="savatar" style="background:${PCOLORS[s.p]||'#888'};">${s.p.slice(0,2).toUpperCase()}</div>
+      <div class="sinfo">
+        <div class="sname">${s.p}</div>
+        <div class="sdesc">${s.n.toLocaleString('id')} konten &middot; ${s.invN} investasi &middot; med.eng=${s.med.toFixed(0)}</div>
+      </div>
+    </div>`).join('');
+
+  // Language breakdown
+  const langTotal = countValues(DF_ALL.map(r=>r.lang));
+  const total = DF_ALL.length;
+  el('plt-lang').innerHTML = Object.entries(langTotal).map(([l,n])=>`
+    <div class="pbar-wrap">
+      <div class="pbar-lbl"><span>${l==='id'?'Indonesia':l==='en'?'English':'Unknown'}</span><span>${(n/total*100).toFixed(1)}% (${n.toLocaleString('id')})</span></div>
+      <div class="pbar"><div class="pfill" style="width:${n/total*100}%;background:${l==='id'?'#1B3A5C':l==='en'?'#2E6EA6':'#9AA5B4'};"></div></div>
+    </div>`).join('');
+}
+
+// =====================================================================
+// KONTEN
+// =====================================================================
+function renderKonten() {
+  const invRows = DF_ALL.filter(r=>r.is_investment_content===1);
+  const platforms = [...new Set(DF_ALL.map(r=>r.platform))];
+
+  // Engagement by text length bin (median per bin per platform, konten investasi)
+  const elData = {};
+  platforms.forEach(p => elData[p] = TEXT_BINS.map(b => {
+    const vals = invRows.filter(r=>r.platform===p && r.text_length>b.min && r.text_length<=b.max).map(r=>r.total_interaction);
+    return median(vals) || 0;
+  }));
+  mkBar('ch-eng-len', TEXT_BINS.map(b=>b.label),
+    platforms.map(p=>({label:p, data:elData[p], backgroundColor:PCOLORS[p]||'#888', borderRadius:3}))
+  );
+
+  // Engagement by hashtag bin
+  const ehData = {};
+  platforms.forEach(p => ehData[p] = HTAG_BINS.map(b => {
+    const vals = invRows.filter(r=>r.platform===p && r.hashtag_count>b.min && r.hashtag_count<=b.max).map(r=>r.total_interaction);
+    return median(vals) || 0;
+  }));
+  mkBar('ch-eng-htag', HTAG_BINS.map(b=>b.label),
+    platforms.map(p=>({label:p, data:ehData[p], backgroundColor:PCOLORS[p]||'#888', borderRadius:3}))
+  );
+
+  // Frame analysis
+  const frameNames = Object.keys(FRAMES);
+  const frameKeys = frameNames.map(n=>'frame_'+n.split('/')[0].trim().toLowerCase().replace(/\s+/g,'_'));
+  const frameData = platforms.map(p=>{
+    const rows = invRows.filter(r=>r.platform===p);
+    return {p, counts: frameKeys.map(k=> rows.length ? rows.filter(r=>r[k]===1).length/rows.length*100 : 0)};
+  });
+  mkBar('ch-frame', frameNames,
+    frameData.map(d=>({label:d.p, data:d.counts, backgroundColor:PCOLORS[d.p]||'#888', borderRadius:3}))
+  );
+
+  // Frame insight
+  const topFrameByPlat = frameData.map(d=>{
+    const maxI = d.counts.indexOf(Math.max(...d.counts));
+    return `${d.p}: ${frameNames[maxI]} (${d.counts[maxI].toFixed(0)}%)`;
+  });
+  const frameInsEl = el('kont-frame-insight');
+  frameInsEl.style.display = 'block';
+  frameInsEl.innerHTML = `<strong>Frame Dominan per Platform</strong>${topFrameByPlat.join(' — ')}`;
+
+  // Inv kw score per platform
+  el('kont-kw-score').innerHTML = platforms.map(p=>{
+    const avg = mean(DF_ALL.filter(r=>r.platform===p).map(r=>r.inv_kw_score));
+    return `<div class="pbar-wrap">
+      <div class="pbar-lbl"><span>${p}</span><span>${avg.toFixed(2)}</span></div>
+      <div class="pbar"><div class="pfill" style="width:${Math.min(avg/5*100,100)}%;background:${PCOLORS[p]||'#888'};"></div></div>
+    </div>`;
+  }).join('');
+
+  // Top rows per platform (by total_interaction)
+  el('kont-toprows').innerHTML = platforms.map(p=>{
+    const top = DF_ALL.filter(r=>r.platform===p && r.total_interaction>0).sort((a,b)=>b.total_interaction-a.total_interaction)[0];
+    if (!top) return '';
+    const preview = (top.text||'').slice(0,60) + ((top.text||'').length>60?'...':'');
+    return `<div class="srow">
+      <div class="savatar" style="background:${PCOLORS[p]||'#888'};">${p.slice(0,2).toUpperCase()}</div>
+      <div class="sinfo"><div class="sname">${p} — top post</div><div class="sdesc">${preview}</div><div class="sdesc" style="margin-top:2px;">${top.total_interaction.toLocaleString('id')} interaksi</div></div>
+    </div>`;
+  }).join('');
+}
+
+// =====================================================================
+// INVESTASI
+// =====================================================================
+function renderInvestasi() {
+  // LAKIN capaian chart
+  const sortedL = [...LAKIN_DATA].sort((a,b)=>b.c-a.c);
+  mkHBar('ch-lakin',
+    sortedL.map(d=>d.d),
+    sortedL.map(d=>d.c),
+    sortedL.map(d=>{
+      const s = LAKIN_STATUS(d.c);
+      return s.cls==='high'?'#1E6B4A':s.cls==='ok'?'#2E6EA6':s.cls==='near'?'#D47F28':'#C0392B';
+    })
+  );
+
+  // Investment gap: count posts per destinasi from real data
+  const invRows = DF_ALL.filter(r=>r.is_investment_content===1);
+  const gapData = LAKIN_DATA.map(lakin=>{
+    const destRows = invRows.filter(r=>(r.destinasi_tagged||[]).includes(lakin.d));
+    const n_posts = destRows.length;
+    const med_eng = median(destRows.map(r=>r.total_interaction));
+    const plat_div = new Set(destRows.map(r=>r.platform)).size;
+    return {...lakin, n_posts_investasi: n_posts, med_engagement: med_eng, plat_diversity: plat_div};
+  });
+
+  // Quadrant classification
+  const med_digital = median(gapData.map(d=>d.n_posts_investasi));
+  gapData.forEach(d=>{
+    const hi_invest = d.c >= 100;
+    const hi_digital = d.n_posts_investasi >= med_digital;
+    if (hi_invest && hi_digital) d.kuadran = 'Q1: Mature & Well-Promoted';
+    else if (hi_invest && !hi_digital) d.kuadran = 'Q2: Mature, Under-Promoted';
+    else if (!hi_invest && hi_digital) d.kuadran = 'Q3: Over-Promoted/Underperform';
+    else d.kuadran = 'Q4: Hidden Gem/Needs Push';
+  });
+
+  // Scatter chart
+  const qColors = {
+    'Q1: Mature & Well-Promoted':'#1E6B4A',
+    'Q2: Mature, Under-Promoted':'#2E6EA6',
+    'Q3: Over-Promoted/Underperform':'#D47F28',
+    'Q4: Hidden Gem/Needs Push':'#C0392B',
+  };
+  const scatterDatasets = Object.keys(qColors).map(q=>({
+    label: q,
+    data: gapData.filter(d=>d.kuadran===q).map(d=>({x:d.n_posts_investasi, y:d.c, label:d.d})),
+    backgroundColor: qColors[q]+'BB',
+    pointRadius: 8, pointHoverRadius: 10,
+  }));
+  mkScatter('ch-gap', scatterDatasets);
+
+  // Quadrant summary
+  ['q1','q2','q3','q4'].forEach((q,i)=>{
+    const qName = Object.keys(qColors)[i];
+    const items = gapData.filter(d=>d.kuadran===qName).map(d=>d.d);
+    el(q+'-items').textContent = items.length ? items.join(', ') : 'Tidak ada';
+  });
+
+  // Gap insight
+  const q2 = gapData.filter(d=>d.kuadran==='Q2: Mature, Under-Promoted');
+  const q4 = gapData.filter(d=>d.kuadran==='Q4: Hidden Gem/Needs Push');
+  const gapInsEl = el('inv-gap-insight');
+  gapInsEl.style.display = 'block';
+  gapInsEl.innerHTML = `<strong>Prioritas Kampanye Kemenpar</strong>Q2 (investasi tinggi, konten rendah): ${q2.map(d=>d.d).join(', ')||'tidak ada'}. Q4 (butuh push ganda): ${q4.map(d=>d.d).join(', ')||'tidak ada'}.`;
+
+  // Table
+  const tbody = el('inv-table');
+  tbody.innerHTML = gapData.sort((a,b)=>b.c-a.c).map(d=>{
+    const st = LAKIN_STATUS(d.c);
+    const qcls = {'Q1':'high','Q2':'ok','Q3':'near','Q4':'low'};
+    const qkey = d.kuadran.slice(0,2);
+    return `<tr>
+      <td><strong>${d.d}</strong></td>
+      <td class="mono">${d.r.toLocaleString('id-ID',{maximumFractionDigits:0})}</td>
+      <td style="font-weight:700;">${d.c.toFixed(2)}%</td>
+      <td><span class="sbadge ${st.cls}">${st.l}</span></td>
+      <td style="font-weight:700;">${d.n_posts_investasi}</td>
+      <td>${d.plat_diversity}</td>
+      <td><span class="sbadge ${qcls[qkey]||'neu'}">${d.kuadran}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Dest rank side
+  const destCounts = {};
+  invRows.forEach(r=>(r.destinasi_tagged||[]).forEach(d=>{ if(d!=='Tidak Teridentifikasi') destCounts[d]=(destCounts[d]||0)+1; }));
+  const destOrder = Object.entries(destCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxD = destOrder[0]?.[1] || 1;
+  el('inv-dest-rank').innerHTML = destOrder.map(([d,n])=>`
+    <div class="pbar-wrap">
+      <div class="pbar-lbl"><span>${d}</span><span>${n} post</span></div>
+      <div class="pbar"><div class="pfill" style="width:${n/maxD*100}%;background:var(--navy);"></div></div>
+    </div>`).join('');
+}
+
+// =====================================================================
+// REKOMENDASI
+// =====================================================================
+function renderRekomendasi() {
+  const platforms = [...new Set(DF_ALL.map(r=>r.platform))];
+  const invRows = DF_ALL.filter(r=>r.is_investment_content===1);
+  const total = DF_ALL.length;
+
+  // Best platform by IES
+  const pStats = platforms.map(p=>{
+    const rows = DF_ALL.filter(r=>r.platform===p);
+    return {p, n:rows.length, med:median(rows.map(r=>r.total_interaction)),
+      pctInv:rows.filter(r=>r.is_investment_content).length/rows.length,
+      avgKw:mean(rows.map(r=>r.inv_kw_score))};
+  });
+  const n_n=normalize01(pStats.map(s=>s.n));
+  const e_n=normalize01(pStats.map(s=>s.med));
+  const r_n=normalize01(pStats.map(s=>s.pctInv));
+  const k_n=normalize01(pStats.map(s=>s.avgKw));
+  const ies=pStats.map((s,i)=>({...s,ies:n_n[i]*0.15+e_n[i]*0.30+r_n[i]*0.25+k_n[i]*0.30}));
+  ies.sort((a,b)=>b.ies-a.ies);
+  const bestPlt = ies[0]?.p || '-';
+  const highestEng = [...pStats].sort((a,b)=>b.med-a.med)[0]?.p || '-';
+
+  // Best frame
+  const frameNames = Object.keys(FRAMES);
+  const frameKeys = frameNames.map(n=>'frame_'+n.split('/')[0].trim().toLowerCase().replace(/\s+/g,'_'));
+  const framePct = frameKeys.map((k,i)=>({name:frameNames[i], pct:invRows.length?invRows.filter(r=>r[k]).length/invRows.length*100:0}));
+  framePct.sort((a,b)=>b.pct-a.pct);
+
+  // Best text length
+  const engByLen = TEXT_BINS.map(b=>{
+    const vals = invRows.filter(r=>r.text_length>b.min && r.text_length<=b.max).map(r=>r.total_interaction);
+    return {label:b.label, med:median(vals)};
+  }).filter(b=>b.med>0);
+  engByLen.sort((a,b)=>b.med-a.med);
+
+  // Q2 destinations
+  const invByDest = {};
+  invRows.forEach(r=>(r.destinasi_tagged||[]).forEach(d=>{ if(d!=='Tidak Teridentifikasi') invByDest[d]=(invByDest[d]||0)+1; }));
+  const medDig = median(LAKIN_DATA.map(ld=>invByDest[ld.d]||0));
+  const q2Dest = LAKIN_DATA.filter(ld=>ld.c>=100 && (invByDest[ld.d]||0)<medDig).map(ld=>ld.d);
+
+  el('reko-container').innerHTML = `
+    <div class="notice">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Semua rekomendasi berikut dihasilkan dari data yang Anda upload. Angka dan prioritas dihitung otomatis sesuai formula notebook.
+    </div>
+    <div class="g2" style="margin-bottom:14px;">
+      <div class="card">
+        <div class="sec-hdr"><span class="sec-title">Platform Terbaik</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="padding:10px;background:var(--sky-bg);border-radius:7px;">
+            <div style="font-size:11px;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">IES Score Tertinggi</div>
+            <div style="font-size:18px;font-weight:700;">${bestPlt}</div>
+            <div style="font-size:12px;color:var(--text-2);">Gabungan volume, engagement, relevansi, keyword score</div>
+          </div>
+          <div style="padding:10px;background:var(--green-bg);border-radius:7px;">
+            <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Median Engagement Tertinggi</div>
+            <div style="font-size:18px;font-weight:700;">${highestEng}</div>
+          </div>
+        </div>
+        <div class="ibox">
+          <strong>Distribusi IES per Platform</strong>
+          ${ies.map((s,i)=>`#${i+1} ${s.p}: ${(s.ies*100).toFixed(1)} poin (${s.n.toLocaleString('id')} konten, med.eng ${s.med.toFixed(0)})`).join('<br>')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-hdr"><span class="sec-title">Strategi Konten</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:10px;background:#F8FAFC;border-radius:7px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:3px;">Frame Paling Dominan (konten investasi)</div>
+            ${framePct.slice(0,3).map((f,i)=>`<div style="font-size:12.5px;"><strong>#${i+1}</strong> ${f.name} — ${f.pct.toFixed(1)}% konten</div>`).join('')}
+          </div>
+          <div style="padding:10px;background:#F8FAFC;border-radius:7px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:3px;">Panjang Teks Optimal (median engagement tertinggi)</div>
+            <div style="font-size:14px;font-weight:700;">${engByLen[0]?.label || '-'} karakter</div>
+            <div style="font-size:12px;color:var(--text-2);">Median engagement: ${engByLen[0]?.med?.toFixed(0)||'-'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="sec-hdr"><span class="sec-title">Destinasi Prioritas Kampanye (Q2: Investasi Tinggi, Promosi Rendah)</span></div>
+      ${q2Dest.length ? `
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+          ${q2Dest.map(d=>{
+            const lakin = LAKIN_DATA.find(l=>l.d===d);
+            return `<div style="padding:10px 14px;background:var(--sky-bg);border:1px solid rgba(46,110,166,.2);border-radius:7px;">
+              <div style="font-size:13px;font-weight:700;">${d}</div>
+              <div style="font-size:11.5px;color:var(--sky);">Capaian LAKIN: ${lakin?.c?.toFixed(1)||'-'}%</div>
+              <div style="font-size:11.5px;color:var(--text-2);">Konten investasi: ${invByDest[d]||0} post</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="ibox"><strong>Tindakan Prioritas</strong>Destinasi ini memiliki realisasi investasi tinggi tapi minim konten digital. Buat campaign konten spesifik per destinasi untuk mengamplifikasi potensi yang sudah ada.</div>
+      ` : `<div style="padding:10px;color:var(--text-2);font-size:13px;">Tidak ada destinasi Q2 dengan data yang ada.</div>`}
+    </div>
+    <div class="card">
+      <div class="sec-hdr"><span class="sec-title">Ringkasan Statistik Data</span></div>
+      <table class="tbl">
+        <thead><tr><th>Platform</th><th>Total Post</th><th>Konten Investasi</th><th>% Relevan</th><th>Median Engagement</th><th>Avg Inv.KW Score</th><th>IES Score</th></tr></thead>
+        <tbody>${ies.map(s=>`<tr>
+          <td><span class="dot" style="background:${PCOLORS[s.p]||'#888'};"></span><strong>${s.p}</strong></td>
+          <td class="mono">${s.n.toLocaleString('id')}</td>
+          <td class="mono">${invRows.filter(r=>r.platform===s.p).length}</td>
+          <td class="mono">${(s.pctInv*100).toFixed(1)}%</td>
+          <td class="mono">${s.med.toFixed(0)}</td>
+          <td class="mono">${s.avgKw.toFixed(3)}</td>
+          <td class="mono" style="font-weight:700;">${(s.ies*100).toFixed(1)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `;
+
+  // Sources side
+  const srcParts = Object.entries(RAW_FILES).map(([p,rows])=>`${p}: ${rows.length.toLocaleString('id')} baris`);
+  el('reko-sources').innerHTML = `<div style="font-size:12px;color:var(--text-2);line-height:2;">
+    ${srcParts.map(s=>`<div>${s}</div>`).join('')}
+    <div style="margin-top:8px;font-size:11px;color:var(--text-3);">LAKIN 2025 Kemenpar — Tabel 3.9</div>
+    <div style="font-size:11px;color:var(--text-3);">Total: ${DF_ALL.length.toLocaleString('id')} records diproses</div>
+  </div>`;
+}
+
+// =====================================================================
+// UTILS
+// =====================================================================
+function el(id) { return document.getElementById(id); }
+
+// Load SheetJS dynamically for XLSX support
+(function loadXLSX() {
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
